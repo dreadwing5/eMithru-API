@@ -2,10 +2,19 @@ const router = require("express").Router();
 
 const Conversation = require("../models/Conversation");
 
-router.post("/:studentId", async (req, res) => {
+router.get("/", async (req, res) => {
+  try {
+    const conversations = await Conversation.find();
+    res.status(200).json(conversations);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+router.post("/:userId", async (req, res) => {
   //check if thread already exists
   const conversation = await Conversation.findOne({
-    conversationId: req.params.studentId,
+    conversationId: req.params.userId,
   });
 
   if (conversation) {
@@ -13,7 +22,7 @@ router.post("/:studentId", async (req, res) => {
   }
 
   const newConversation = new Conversation({
-    conversationId: req.params.studentId,
+    conversationId: req.params.userId,
     status: "active",
   });
 
@@ -28,7 +37,7 @@ router.post("/:studentId", async (req, res) => {
 //get conversation of a user ( each conversation will be mapped to a student)
 router.get("/:userId", async (req, res) => {
   try {
-    const conversation = await Conversation.findOne({
+    const conversation = await Conversation.find({
       conversationId: req.params.userId,
     });
     res.status(200).json(conversation);
