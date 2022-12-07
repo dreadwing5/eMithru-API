@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Sahaj",
+    "email": "sahaj@sahaj.com",
+    "password": "I'm a password",
+    "passwordConfirm": "I'm a password",
+    "phone": "9108344405",
+    "role": "admin"
+  },
+  {
+    "name": "Saurabh",
+    "email": "saurabh@sahaj.com",
+    "password": "I'm a password",
+    "passwordConfirm": "I'm a password",
+    "phone": "9090099091",
+    "role": "faculty"
+  },
+  {
+    "name": "Sachin",
+    "email": "sachin@sahaj.com",
+    "password": "I'm a password",
+    "passwordConfirm": "I'm a password",
+    "phone": "9108304405",
+    "role": "student"
+  },
+  {
+    "name": "Zoeb",
+    "email": "zoeb@sahaj.com",
+    "password": "I'm a password",
+    "passwordConfirm": "I'm a password",
+    "phone": "9108344408",
+    "role": "coordinator"
+  },
+  {
+    "name": "Somu",
+    "email": "somu@roy.com",
+    "password": "I'm a password",
+    "passwordConfirm": "I'm a password",
+    "phone": "9108314405",
+    "role": "student"
+  }
+]
