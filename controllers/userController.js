@@ -36,8 +36,8 @@ exports.createUser = async (req, res) => {
       password,
       passwordConfirm,
     });
-    newUser.password = undefined;
     await newUser.save();
+    newUser.password = undefined;
     res.status(201).json({
       status: "success",
       data: {

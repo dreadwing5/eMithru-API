@@ -5,10 +5,6 @@ const messageSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "conversations",
   },
-  to: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "users",
-  },
   from: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",

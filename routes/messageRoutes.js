@@ -4,8 +4,8 @@ const Message = require("../models/Message");
 //new message
 router.post("/", async (req, res) => {
   const newMessage = {
-    conversationId: req.body.conversationId,
-    senderId: req.body.senderId,
+    conversation: req.body.conversationId,
+    from: req.body.senderId,
     body: req.body.text,
   };
   const message = new Message(newMessage);
@@ -23,7 +23,6 @@ router.get("/:conversationId", async (req, res) => {
   try {
     const messages = await Message.find({
       conversationId: req.params.conversationId,
-      sendStatus: 1,
     });
     res.status(200).json(messages);
   } catch (err) {

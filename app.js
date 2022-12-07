@@ -7,6 +7,8 @@ const xss = require("xss-clean");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 const userRouter = require("./routes/userRoutes");
+const messageRouter = require("./routes/messageRoutes");
+const conversationRouter = require("./routes/conversationRoutes");
 
 const app = express();
 
@@ -50,6 +52,8 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/users", userRouter);
+app.use("/api/messages", messageRouter);
+app.use("/api/conversations", conversationRouter);
 
 //Handle non-existing routes
 app.all("*", (req, res, next) => {
