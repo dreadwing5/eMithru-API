@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     validate: [validator.isEmail, "Please provide a valid email"],
   },
-  phone : {
+  phone: {
     type: String,
     required: [true, "Please provide your phone number"],
     validate: [validator.isMobilePhone, "Please provide a valid phone number"],
@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
   photo: String,
   role: {
     type: String,
-    enum: ["student", "teacher", "admin"],
+    enum: ["student", "faculty", "coordinator"],
     default: "admin",
   },
   password: {

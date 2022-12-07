@@ -114,8 +114,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.restrictTo = (...roles) => {
-  return (req, res, next) => {
+exports.restrictTo =
+  (...roles) =>
+  (req, res, next) => {
     // roles ['admin', 'lead-guide'] , req.user.role = 'user'  => no access
 
     //403 = Forbidden
@@ -127,7 +128,6 @@ exports.restrictTo = (...roles) => {
 
     next();
   };
-};
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 1 ) Get user based on POSTed email
