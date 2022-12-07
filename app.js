@@ -49,7 +49,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/v1/users", userRouter);
+app.use("/api/users", userRouter);
 
 //Handle non-existing routes
 app.all("*", (req, res, next) => {
