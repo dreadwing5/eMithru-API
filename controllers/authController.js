@@ -174,3 +174,8 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   }
 });
 exports.resetPassword = (req, res, next) => {};
+
+exports.logout = (req, res, next) => {
+  req.logout();
+  res.redirect("/");
+};
