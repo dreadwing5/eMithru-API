@@ -3,6 +3,7 @@ const Message = require("../models/Message");
 
 //new message
 router.post("/", async (req, res) => {
+  console.log("ji");
   const newMessage = {
     conversation: req.body.conversationId,
     from: req.body.senderId,

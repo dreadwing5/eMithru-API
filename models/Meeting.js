@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const meetingSchema = new mongoose.Schema({
-  recipients: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
+  // recipients: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
   title: {
     type: String,
     required: true,
@@ -10,15 +10,15 @@ const meetingSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  start_time: {
+  start: {
     type: String,
     required: true,
   },
-  end_time: {
+  end: {
     type: String,
     required: true,
   },
-  type_of_meeting: {
+  type: {
     type: String,
     required: true,
   },
