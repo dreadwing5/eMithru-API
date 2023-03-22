@@ -5,12 +5,14 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const cors = require("cors");
+
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 const userRouter = require("./routes/userRoutes");
 const messageRouter = require("./routes/messageRoutes");
 const conversationRouter = require("./routes/conversationRoutes");
 const meetingRouter = require("./routes/meetingRoutes");
+const openAiRouter = require("./routes/openAiRoutes");
 const app = express();
 
 //1) GLOBAL MIDDLEWARE
@@ -58,6 +60,8 @@ app.use("/api/users", userRouter);
 app.use("/api/messages", messageRouter);
 app.use("/api/conversations", conversationRouter);
 app.use("/api/meetings", meetingRouter);
+app.use("/api/openai", openAiRouter);
+
 
 //Handle non-existing routes
 app.all("*", (req, res, next) => {
