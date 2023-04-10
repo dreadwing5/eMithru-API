@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const meetingSchema = new mongoose.Schema({
-  // recipients: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
+  recipients: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
   title: {
     type: String,
     required: true,
