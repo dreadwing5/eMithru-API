@@ -13,6 +13,9 @@ const messageRouter = require("./routes/messageRoutes");
 const conversationRouter = require("./routes/conversationRoutes");
 const meetingRouter = require("./routes/meetingRoutes");
 const openAiRouter = require("./routes/openAiRoutes");
+const personalRouter = require("./routes/personalCRUD");
+const academicRouter = require("./routes/academicCRUD");
+const admissionRouter = require("./routes/AdmissionRoutes");
 const app = express();
 
 //1) GLOBAL MIDDLEWARE
@@ -61,8 +64,9 @@ app.use("/api/messages", messageRouter);
 app.use("/api/conversations", conversationRouter);
 app.use("/api/meetings", meetingRouter);
 app.use("/api/openai", openAiRouter);
-
-
+app.use("/api/personal", personalRouter);
+app.use("/api/academic", academicRouter);
+app.use("/api/admission", admissionRouter);
 //Handle non-existing routes
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
