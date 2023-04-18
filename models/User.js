@@ -20,11 +20,22 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please provide your phone number"],
     validate: [validator.isMobilePhone, "Please provide a valid phone number"],
   },
-  photo: String,
+  avatar: String,
+  address: {
+    type: String,
+  },
   role: {
     type: String,
-    enum: ["student", "faculty", "coordinator", "admin"],
+    enum: ["mentor", "mentee", "hod", "admin"],
     default: "admin",
+  },
+  lastActivity: {
+    type: Date,
+  },
+  status: {
+    type: String,
+    enum: ["active", "inactive", "suspended"],
+    default: "active",
   },
   password: {
     type: String,
