@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Academics = require("../models/Academic");
+const Academics = require("../models/StudentModel/Academic");
 
 const getAcademic = async (req, res) => {
   try {
