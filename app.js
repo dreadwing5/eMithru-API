@@ -16,6 +16,7 @@ const openAiRouter = require("./routes/openAiRoutes");
 const personalRouter = require("./routes/personalCRUD");
 const academicRouter = require("./routes/academicCRUD");
 const admissionRouter = require("./routes/AdmissionRoutes");
+const attendanceRouter = require("./routes/AttendanceRoutes");
 const app = express();
 
 //1) GLOBAL MIDDLEWARE
@@ -59,6 +60,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/api/attendance", attendanceRouter);
 app.use("/api/users", userRouter);
 app.use("/api/messages", messageRouter);
 app.use("/api/conversations", conversationRouter);
@@ -67,6 +69,7 @@ app.use("/api/openai", openAiRouter);
 app.use("/api/personal", personalRouter);
 app.use("/api/academic", academicRouter);
 app.use("/api/admission", admissionRouter);
+
 //Handle non-existing routes
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
