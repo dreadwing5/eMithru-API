@@ -14,7 +14,7 @@ const conversationRouter = require("./routes/conversationRoutes");
 const meetingRouter = require("./routes/meetingRoutes");
 const openAiRouter = require("./routes/openAiRoutes");
 const studentRouter = require("./routes/studentRoutes");
-
+const attendanceRouter = require("./routes/AttendanceRoutes");
 const app = express();
 
 //1) GLOBAL MIDDLEWARE
@@ -58,6 +58,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/api/attendance", attendanceRouter);
 app.use("/api/users", userRouter);
 app.use("/api/messages", messageRouter);
 app.use("/api/conversations", conversationRouter);
