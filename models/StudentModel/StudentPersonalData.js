@@ -13,6 +13,8 @@ const studentPersonalDataSchema = new mongoose.Schema({
   nationality: { type: String, required: true },
   religion: { type: String, required: true },
   caste: { type: String, required: true },
+  personalEmail: { type: String, required: true },
+  personalPhone: { type: String, required: true },
   permanentAddress: { type: String, required: true },
   familyDetails: {
     father: { type: familyDetailsSchema, required: true },

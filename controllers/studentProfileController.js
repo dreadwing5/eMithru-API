@@ -14,6 +14,8 @@ exports.createStudentProfile = catchAsync(async (req, res, next) => {
     permanentAddress,
     familyDetails,
     siblings,
+    personalPhone,
+    personalEmail,
   } = req.body.personalData;
 
   const studentPersonalData = new StudentPersonalData({
@@ -24,12 +26,16 @@ exports.createStudentProfile = catchAsync(async (req, res, next) => {
     permanentAddress,
     familyDetails,
     siblings,
+    personalPhone,
+    personalEmail,
   });
   // save the student personal data document to the database
 
   const savedPersonalData = await studentPersonalData.save().catch((err) => {
     next(new AppError(err.message, 400));
   });
+
+  if (!savedPersonalData) return;
 
   // create a new student profile document with the student personal data reference
   const studentProfile = new StudentProfile({
@@ -44,7 +50,8 @@ exports.createStudentProfile = catchAsync(async (req, res, next) => {
   const savedProfile = await studentProfile.save().catch((err) => {
     next(new AppError(err.message, 400));
   });
-
+  // return early if error occurs while saving the profile
+  if (!savedProfile) return;
   res.status(201).json({
     status: "success",
     data: {

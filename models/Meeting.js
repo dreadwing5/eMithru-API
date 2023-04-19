@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const meetingSchema = new mongoose.Schema({
   recipients: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
   title: {
