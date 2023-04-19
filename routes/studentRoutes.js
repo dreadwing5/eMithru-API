@@ -1,12 +1,13 @@
 const express = require("express");
+
 const router = express.Router();
-const studentController = require("../controllers/studentProfileController");
+const studentController = require("../controllers/Student/profileController");
 
 // POST /api/v1/students
-router.post("/", studentController.createStudentProfile);
+router.post("/profile", studentController.createStudentProfile);
 
 // GET /api/v1/students/:id
-router.get("/:id", studentController.getStudentProfileById);
+router.get("/profile/:id", studentController.getStudentProfileById);
 
 // PATCH /api/v1/students/:id
 // router.patch("/:id", studentController.updateStudentProfileById);
