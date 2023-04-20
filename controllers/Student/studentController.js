@@ -165,7 +165,7 @@ exports.getAllStudents = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      data: students,
+      students,
     });
   } catch (error) {
     console.error(error);
