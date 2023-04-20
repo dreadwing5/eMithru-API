@@ -2,11 +2,12 @@ const StudentProfile = require("../../models/Student/Profile");
 
 const catchAsync = require("../../utils/catchAsync");
 const AppError = require("../../utils/appError");
+const User = require("../../models/User");
 
 exports.createStudentProfile = catchAsync(async (req, res, next) => {
   // create a new student personal data document
   const {
-    userId,
+    user,
     fullName,
     department,
     nameOnMarksheet,
@@ -34,7 +35,7 @@ exports.createStudentProfile = catchAsync(async (req, res, next) => {
   } = req.body;
 
   const studentProfile = new StudentProfile({
-    userId,
+    user,
     fullName,
     department,
     nameOnMarksheet,
@@ -92,3 +93,85 @@ exports.getStudentProfileById = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.getAllStudents = async (req, res, next) => {
+  try {
+    const students = await User.aggregate([
+      {
+        $match: {
+          role: "student",
+        },
+      },
+      {
+        $lookup: {
+          from: "mentorships",
+          localField: "_id",
+          foreignField: "mentee",
+          as: "mentorship",
+        },
+      },
+      {
+        $unwind: {
+          path: "$mentorship",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "mentorship.mentor",
+          foreignField: "_id",
+          as: "mentorData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$mentorData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "studentprofiles",
+          localField: "_id",
+          foreignField: "user",
+          as: "studentProfile",
+        },
+      },
+      {
+        $unwind: "$studentProfile",
+      },
+      {
+        $addFields: {
+          name: "$name",
+          usn: "$studentProfile.usn",
+          mentor: {
+            mentor_id: "$mentorData._id",
+            name: "$mentorData.name",
+            startDate: "$mentorship.startDate",
+            endDate: "$mentorship.endDate",
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          usn: 1,
+          mentor: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      status: "success",
+      data: students,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "Server error",
+    });
+  }
+};

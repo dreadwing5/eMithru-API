@@ -13,20 +13,15 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please provide your email"],
     unique: true,
     lowercase: true,
-    validate: [validator.isEmail, "Please provide a valid email"],
   },
   phone: {
     type: String,
-    required: [true, "Please provide your phone number"],
-    validate: [validator.isMobilePhone, "Please provide a valid phone number"],
   },
   avatar: String,
-  address: {
-    type: String,
-  },
   role: {
     type: String,
-    enum: ["mentor", "mentee", "hod", "admin"],
+    required: true,
+    enum: ["student", "faculty", "hod", "admin"],
     default: "admin",
   },
   lastActivity: {

@@ -1,42 +1,62 @@
 [
   {
-    "name": "Sahaj",
-    "email": "sahaj@sahaj.com",
-    "password": "I'm a password",
-    "passwordConfirm": "I'm a password",
-    "phone": "9108344405",
-    "role": "admin"
+    "firstName": "Aarav",
+    "middleName": "",
+    "lastName": "Patel",
+    "email": "aaravpatel@example.com",
+    "role": "student",
+    "phone": "1234567890",
+    "password": "password",
+    "passwordConfirm": "password",
+    "department": "Computer Science",
+    "usn": "CS101"
   },
   {
-    "name": "Saurabh",
-    "email": "saurabh@sahaj.com",
-    "password": "I'm a password",
-    "passwordConfirm": "I'm a password",
-    "phone": "9090099091",
-    "role": "faculty"
+    "firstName": "Aditi",
+    "middleName": "",
+    "lastName": "Sharma",
+    "email": "aditisharma@example.com",
+    "role": "student",
+    "phone": "1234567891",
+    "password": "password",
+    "passwordConfirm": "password",
+    "department": "Electronics",
+    "usn": "EC102"
   },
   {
-    "name": "Sachin",
-    "email": "sachin@sahaj.com",
-    "password": "I'm a password",
-    "passwordConfirm": "I'm a password",
-    "phone": "9108304405",
-    "role": "student"
+    "firstName": "Aryan",
+    "middleName": "",
+    "lastName": "Singh",
+    "email": "aryansingh@example.com",
+    "role": "student",
+    "phone": "1234567892",
+    "password": "password",
+    "passwordConfirm": "password",
+    "department": "Mechanical",
+    "usn": "ME103"
   },
   {
-    "name": "Zoeb",
-    "email": "zoeb@sahaj.com",
-    "password": "I'm a password",
-    "passwordConfirm": "I'm a password",
-    "phone": "9108344408",
-    "role": "coordinator"
+    "firstName": "Ishaan",
+    "middleName": "",
+    "lastName": "Gupta",
+    "email": "ishaangupta@example.com",
+    "role": "student",
+    "phone": "1234567893",
+    "password": "password",
+    "passwordConfirm": "password",
+    "department": "Computer Science",
+    "usn": "CS104"
   },
   {
-    "name": "Somu",
-    "email": "somu@roy.com",
-    "password": "I'm a password",
-    "passwordConfirm": "I'm a password",
-    "phone": "9108314405",
-    "role": "student"
+    "firstName": "Kavya",
+    "middleName": "",
+    "lastName": "Mishra",
+    "email": "kavyamishra@example.com",
+    "role": "student",
+    "phone": "1234567894",
+    "password": "password",
+    "passwordConfirm": "password",
+    "department": "Electronics",
+    "usn": "EC105"
   }
 ]
