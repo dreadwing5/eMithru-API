@@ -3,7 +3,8 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
+  const filter = req.query.role ? { role: req.query.role } : {};
+  const users = await User.find(filter);
 
   // Check if users array is empty
   if (users.length === 0) {
