@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Meeting = require("../models/Meeting");
-
+const Mentorship = require("../models/Mentorship");
 router.post("/", async (req, res) => {
   const { title, location, start, end, type, recipients } = req.body;
   console.log(title);
