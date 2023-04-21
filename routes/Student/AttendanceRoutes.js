@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { ObjectId } = require("mongodb");
-const Attendance = require("../models/Attendance");
+const Attendance = require("../../models/Attendance");
 
 // Create new attendance record
 router.post("/", async (req, res, next) => {

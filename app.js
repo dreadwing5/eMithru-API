@@ -13,9 +13,10 @@ const messageRouter = require("./routes/messageRoutes");
 const conversationRouter = require("./routes/conversationRoutes");
 const meetingRouter = require("./routes/meetingRoutes");
 const openAiRouter = require("./routes/openAiRoutes");
-const studentRouter = require("./routes/studentRoutes");
-const attendanceRouter = require("./routes/AttendanceRoutes");
-const mentorRouter = require("./routes/mentorRoutes");
+const studentRouter = require("./routes/Student/studentRoutes");
+const attendanceRouter = require("./routes/Student/AttendanceRoutes");
+const mentorRouter = require("./routes/Student/mentorRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 
@@ -68,6 +69,7 @@ app.use("/api/meetings", meetingRouter);
 app.use("/api/openai", openAiRouter);
 app.use("/api/students", studentRouter);
 app.use("/api/mentors", mentorRouter);
+app.use("/api/notifications", notificationRoutes);
 
 /* app.use("/api/academic", academicRouter);
 app.use("/api/admission", admissionRouter); */
