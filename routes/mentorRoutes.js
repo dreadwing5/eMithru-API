@@ -41,5 +41,30 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+// API route for finding the mentor of a mentee
+router.get("/:menteeId", async (req, res, next) => {
+  try {
+    const { menteeId } = req.params;
+
+    const mentorship = await Mentorship.findOne({ mentee: menteeId });
+
+    if (!mentorship) {
+      return res.status(404).json({ message: "Mentorship not found" });
+    }
+
+    const mentor = await User.findById(mentorship.mentor);
+
+    if (!mentor) {
+      return res.status(404).json({ message: "Mentor not found" });
+    }
+
+    return res.status(200).json({ mentor });
+  } catch (error) {
+    // Handle errors
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
 // Export the router
 module.exports = router;

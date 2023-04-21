@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const Meeting = require("../models/Meeting");
 
-router.post("/createmeeting", async (req, res) => {
+router.post("/", async (req, res) => {
   const { title, location, start, end, type } = req.body;
   console.log(title);
   const newMeeting = {
@@ -23,7 +23,7 @@ router.post("/createmeeting", async (req, res) => {
   }
 });
 
-router.get("/meetings", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const meetingsData = await Meeting.find();
     res.status(200).json(meetingsData);
