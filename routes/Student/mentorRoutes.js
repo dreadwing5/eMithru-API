@@ -66,5 +66,36 @@ router.get("/:menteeId", async (req, res, next) => {
   }
 });
 
+router.get("/:mentorId/mentees", async (req, res, next) => {
+  try {
+    // Get mentor ID from request parameters
+    const { mentorId } = req.params;
+
+    // Find all mentorships where the mentor is the specified mentor ID
+    const mentorships = await Mentorship.find({ mentor: mentorId });
+
+    // If no mentorships are found, return error response
+    if (!mentorships || mentorships.length === 0) {
+      return res.status(404).json({ message: "Mentorship not found" });
+    }
+
+    // Create an array of mentee IDs from the mentorships
+    const menteeIds = mentorships.map((mentorship) => mentorship.mentee);
+
+    // Find all mentees with IDs in the menteeIds array
+    const mentees = await User.find({
+      _id: { $in: menteeIds },
+      role: "student",
+    });
+
+    // Return success response with mentees data
+    return res.status(200).json({ mentees });
+  } catch (error) {
+    // Handle errors
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
 // Export the router
 module.exports = router;
