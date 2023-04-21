@@ -1,8 +1,8 @@
 // Import necessary modules and models
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User");
-const Mentorship = require("../models/Mentorship");
+const User = require("../../models/User");
+const Mentorship = require("../../models/Mentorship");
 
 // API route for creating a new mentorship
 router.post("/", async (req, res, next) => {
