@@ -21,11 +21,6 @@ const meetingSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  mentor: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
 });
 
 const Meeting = mongoose.model("meeting", meetingSchema);

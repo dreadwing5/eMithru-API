@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Meeting = require("../models/Meeting");
 
 router.post("/", async (req, res) => {
-  const { title, location, start, end, type } = req.body;
+  const { title, location, start, end, type, recipients } = req.body;
   console.log(title);
   const newMeeting = {
     title,
@@ -10,7 +10,10 @@ router.post("/", async (req, res) => {
     start,
     end,
     type,
+    recipients,
   };
+
+  // get {list of mentees of a mentor}
 
   const meeting = await new Meeting(newMeeting);
   try {
