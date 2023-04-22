@@ -6,9 +6,12 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(privateConversationController.getAllConversationsOfUser)
+  .get(privateConversationController.getAllConversations)
   .post(privateConversationController.createNewConversation);
 
-router.route("/:id").delete(privateConversationController.deleteConversation);
+router
+  .route("/:id")
+  .get(privateConversationController.getAllConversationsOfUser)
+  .delete(privateConversationController.deleteConversation);
 
 module.exports = router;

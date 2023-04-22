@@ -1,10 +1,26 @@
 const catchAsync = require("../../utils/catchAsync");
 const PrivateConversation = require("../../models/Conversation/PrivateConversation");
 
+exports.getAllConversations = catchAsync(async (req, res, next) => {
+  //   const userId = req.user._id;
+
+  const conversations = await PrivateConversation.find().populate({
+    path: "participants",
+    select: "name avatar",
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      conversations,
+    },
+  });
+});
+
 exports.getAllConversationsOfUser = catchAsync(async (req, res, next) => {
   //   const userId = req.user._id;
 
-  const { userId } = req.body;
+  const { id: userId } = req.params;
   const conversations = await PrivateConversation.find({
     participants: { $in: [userId] },
   }).populate({
