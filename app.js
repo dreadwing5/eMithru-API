@@ -8,6 +8,9 @@ const cors = require("cors");
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
+
+//routes
+
 const userRouter = require("./routes/userRoutes");
 const messageRouter = require("./routes/messageRoutes");
 const conversationRouter = require("./routes/conversationRoutes");
@@ -17,6 +20,7 @@ const studentRouter = require("./routes/Student/studentRoutes");
 const attendanceRouter = require("./routes/Student/AttendanceRoutes");
 const mentorRouter = require("./routes/Student/mentorRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const campusBuddyRoutes = require("./routes/CampusBuddy/campusBuddy");
 
 const app = express();
 
@@ -70,6 +74,7 @@ app.use("/api/openai", openAiRouter);
 app.use("/api/students", studentRouter);
 app.use("/api/mentors", mentorRouter);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/campus-buddy", campusBuddyRoutes);
 
 /* app.use("/api/academic", academicRouter);
 app.use("/api/admission", admissionRouter); */
