@@ -23,7 +23,7 @@ const notificationRouter = require("./routes/notificationRoutes");
 const campusBuddyRouter = require("./routes/CampusBuddy/campusBuddy");
 const privateConversationRouter = require("./routes/Conversation/privateConversationRoutes");
 const messageRouter = require("./routes/Conversation/messageRoutes");
-
+const threadRouter = require("./routes/threadRoutes");
 const app = express();
 
 //1) GLOBAL MIDDLEWARE
@@ -78,6 +78,7 @@ app.use("/api/mentors", mentorRouter);
 app.use("/api/notifications", notificationRouter);
 app.use("/api/campus-buddy", campusBuddyRouter);
 app.use("/api/private-conversations", privateConversationRouter);
+app.use("/api/threads", threadRouter);
 
 /* app.use("/api/academic", academicRouter);
 app.use("/api/admission", admissionRouter); */
