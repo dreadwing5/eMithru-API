@@ -59,10 +59,13 @@ exports.getThreadsByMentorAndStudent = catchAsync(async (req, res, next) => {
   const { mentorId, studentId } = req.params;
   const threads = await Thread.find({
     participants: { $all: [mentorId, studentId] },
-  }).populate(
-    "messages"
-    // select: "name avatar",
-  );
+  })
+    .populate("messages")
+    .populate({
+      path: "createdBy",
+      select: "name",
+    });
+
   res.status(200).json({
     status: "success",
     data: {
