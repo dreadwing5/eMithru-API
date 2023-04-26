@@ -1,6 +1,7 @@
 const express = require("express");
 const userController = require("../controllers/userController");
 const authController = require("../controllers/authController");
+const threadController = require("../controllers/threadController");
 
 const router = express.Router();
 
@@ -21,5 +22,7 @@ router
   .get(userController.getUser)
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
+
+router.route("/:id/threads").get(threadController.getAllThreadsOfUser);
 
 module.exports = router;
