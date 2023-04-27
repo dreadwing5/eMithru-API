@@ -3,10 +3,15 @@ const Thread = require("../models/Thread");
 const Message = require("../models/Conversation/Message");
 
 exports.getAllThreads = catchAsync(async (req, res, next) => {
-  const threads = await Thread.find().populate({
-    path: "participants",
-    select: "name avatar",
-  });
+  const threads = await Thread.find()
+    .populate({
+      path: "participants",
+      select: "name avatar",
+    })
+    .populate({
+      path: "createdBy",
+      select: "name avatar",
+    });
   res.status(200).json({
     status: "success",
     data: {
