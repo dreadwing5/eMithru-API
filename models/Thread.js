@@ -5,6 +5,14 @@ const ThreadSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+    default: `Lorem, ipsum dolor sit amet consectetur adipisicing
+    elit. Consequuntur adipisci, illo repellendus
+    molestias consectetur obcaecati sapiente, et nemo
+    laudantium dolore tempora soluta dolorum ea deleniti
+    iste explicabo. Alias, sapiente asperiores.`,
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Users",
