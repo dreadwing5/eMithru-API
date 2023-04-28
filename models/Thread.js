@@ -7,13 +7,9 @@ const ThreadSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    default: `Lorem, ipsum dolor sit amet consectetur adipisicing
-    elit. Consequuntur adipisci, illo repellendus
-    molestias consectetur obcaecati sapiente, et nemo
-    laudantium dolore tempora soluta dolorum ea deleniti
-    iste explicabo. Alias, sapiente asperiores.`,
+    default: "",
   },
-  createdBy: {
+  author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Users",
   },
@@ -23,22 +19,14 @@ const ThreadSchema = new mongoose.Schema({
       ref: "Users",
     },
   ],
-  state: {
+  status: {
     type: String,
     enum: ["open", "closed"],
     default: "open",
   },
-  openDate: {
-    type: Date,
-    default: Date.now,
-  },
-  closeDate: {
-    type: Date,
-    default: null,
-  },
-  tag: {
+  topic: {
     type: String,
-    enum: ["general", "attendance", "performance", "mental health"],
+    enum: ["general", "attendance", "performance", "well-being"],
     required: true,
   },
   messages: [
@@ -47,6 +35,14 @@ const ThreadSchema = new mongoose.Schema({
       ref: "Messages",
     },
   ],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    required: true,
+  },
+  closedAt: {
+    type: Date,
+  },
 });
 
 module.exports = mongoose.model("Thread", ThreadSchema);

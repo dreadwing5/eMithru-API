@@ -10,11 +10,8 @@ router
 router
   .route("/:threadId")
   .get(threadController.getThreadById)
-  .delete(threadController.deleteThread);
-
-router
-  .route("/search/:mentorId/:studentId")
-  .get(threadController.getThreadsByMentorAndStudent);
+  .delete(threadController.deleteThread)
+  .patch(threadController.closeThread);
 
 router.route("/:threadId/messages").post(threadController.sendMessageToThread);
 
