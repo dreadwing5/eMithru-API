@@ -2,6 +2,36 @@ const catchAsync = require("../utils/catchAsync");
 const Thread = require("../models/Thread");
 const Message = require("../models/Conversation/Message");
 const AppError = require("../utils/appError");
+const ThreadService = require("../services/threadService");
+
+/**
+ * Updates the status of a thread to "closed" by ID.
+ *
+ * @async
+ * @throws {AppError} If thread is not found.
+ */
+
+exports.closeThread = catchAsync(async (req, res, next) => {
+  const { threadId } = req.params;
+  const threadService = new ThreadService();
+
+  try {
+    const updatedThread = await threadService.closeThread(threadId);
+
+    if (!updatedThread) {
+      return next(new AppError("Thread not found", 404));
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        thread: updatedThread,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 exports.createNewThread = catchAsync(async (req, res, next) => {
   const { author, participants, title, topic } = req.body;
@@ -67,33 +97,6 @@ exports.deleteThread = catchAsync(async (req, res, next) => {
   res.status(204).json({
     status: "success",
     data: null,
-  });
-});
-
-/**
- * Updates the status of a thread to "closed" by ID.
- *
- * @async
- * @throws {AppError} If thread is not found.
- */
-
-exports.closeThread = catchAsync(async (req, res, next) => {
-  const { threadId } = req.params;
-  const updatedThread = await Thread.findByIdAndUpdate(
-    threadId,
-    { status: "closed", closedAt: new Date() },
-    { new: true }
-  );
-
-  if (!updatedThread) {
-    return next(new AppError("Thread not found", 404));
-  }
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      thread: updatedThread,
-    },
   });
 });
 
