@@ -1,9 +1,11 @@
-const crypto = require("crypto");
-const mongoose = require("mongoose");
-const validator = require("validator");
-const { encrypt, compare } = require("../utils/passwordHelper");
+import { randomBytes, createHash } from "crypto";
+import mongoose from "mongoose";
+import { encrypt, compare } from "../utils/passwordHelper.js";
 
-const userSchema = new mongoose.Schema({
+const { model, Schema } = mongoose;
+// import validator from "validator";
+
+const userSchema = new Schema({
   name: {
     type: String,
     required: [true, "Please tell us your name!"],
@@ -87,10 +89,9 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 };
 
 userSchema.methods.createPasswordResetToken = function () {
-  const resetToken = crypto.randomBytes(32).toString("hex");
+  const resetToken = randomBytes(32).toString("hex");
 
-  this.passwordResetToken = crypto
-    .createHash("sha256")
+  this.passwordResetToken = createHash("sha256")
     .update(resetToken)
     .digest("hex");
 
@@ -99,6 +100,6 @@ userSchema.methods.createPasswordResetToken = function () {
 
   return resetToken;
 };
-const User = mongoose.model("Users", userSchema);
+const User = model("Users", userSchema);
 
-module.exports = User;
+export default User;

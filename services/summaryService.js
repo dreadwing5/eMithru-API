@@ -1,4 +1,4 @@
-const openai = require("./openaiApi");
+import openai from "./openaiApi.js";
 
 const conversationSummaryPrompt = (thread) => {
   if (thread.messages.length < 3) {
@@ -26,7 +26,8 @@ Evaluate the mentor performance in providing counseling to the student based on 
   return prompt;
 };
 
-exports.generateSummary = async (thread) => {
+// eslint-disable-next-line import/prefer-default-export
+export async function generateSummary(thread) {
   const prompt = conversationSummaryPrompt(thread);
 
   if (prompt === "Not enough messages to generate a summary.") {
@@ -41,4 +42,4 @@ exports.generateSummary = async (thread) => {
   });
 
   return response.data.choices[0].text;
-};
+}

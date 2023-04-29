@@ -1,8 +1,8 @@
-const express = require("express");
+import { Router } from "express";
+import { handleUserQuery } from "../../controllers/CampusBuddy/campusBuddy.js";
 
-const router = express.Router();
-const campusBuddyController = require("../../controllers/CampusBuddy/campusBuddy");
+const router = Router();
 
-router.post("/query", campusBuddyController.handleUserQuery);
+router.post("/query", handleUserQuery);
 
-module.exports = router;
+export default router;

@@ -1,17 +1,10 @@
-const catchAsync = require("../utils/catchAsync");
-const Thread = require("../models/Thread");
-const Message = require("../models/Conversation/Message");
-const AppError = require("../utils/appError");
-const ThreadService = require("../services/threadService");
+import catchAsync from "../utils/catchAsync.js";
+import Thread from "../models/Thread.js";
+import Message from "../models/Conversation/Message.js";
+import AppError from "../utils/appError.js";
+import ThreadService from "../services/threadService.js";
 
-/**
- * Updates the status of a thread to "closed" by ID.
- *
- * @async
- * @throws {AppError} If thread is not found.
- */
-
-exports.closeThread = catchAsync(async (req, res, next) => {
+export const closeThread = catchAsync(async (req, res, next) => {
   const { threadId } = req.params;
   const threadService = new ThreadService();
 
@@ -33,7 +26,7 @@ exports.closeThread = catchAsync(async (req, res, next) => {
   }
 });
 
-exports.createNewThread = catchAsync(async (req, res, next) => {
+export const createNewThread = catchAsync(async (req, res, next) => {
   const { author, participants, title, topic } = req.body;
   const newThread = await Thread.create({
     title,
@@ -56,7 +49,7 @@ exports.createNewThread = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAllThreads = catchAsync(async (req, res, next) => {
+export const getAllThreads = catchAsync(async (req, res, next) => {
   const threads = await Thread.find()
     .populate({
       path: "participants",
@@ -74,7 +67,7 @@ exports.getAllThreads = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getThreadById = catchAsync(async (req, res, next) => {
+export const getThreadById = catchAsync(async (req, res, next) => {
   const { threadId } = req.params;
   const thread = await Thread.findById(threadId)
     .populate({
@@ -90,8 +83,7 @@ exports.getThreadById = catchAsync(async (req, res, next) => {
   });
 });
 
-// TODO : Handle error of delete thread, example if thread is undefined or null
-exports.deleteThread = catchAsync(async (req, res, next) => {
+export const deleteThread = catchAsync(async (req, res, next) => {
   const { threadId } = req.params;
   const thread = await Thread.findByIdAndDelete(threadId);
   res.status(204).json({
@@ -100,7 +92,7 @@ exports.deleteThread = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.sendMessageToThread = catchAsync(async (req, res, next) => {
+export const sendMessageToThread = catchAsync(async (req, res, next) => {
   const { threadId } = req.params;
   const { body, senderId } = req.body;
   const newMessage = await Message.create({ senderId, body });
@@ -119,7 +111,7 @@ exports.sendMessageToThread = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAllThreadsOfUser = catchAsync(async (req, res, next) => {
+export const getAllThreadsOfUser = catchAsync(async (req, res, next) => {
   const { id: userId } = req.params;
 
   const threads = await Thread.find({ participants: userId }).populate({

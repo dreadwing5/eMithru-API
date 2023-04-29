@@ -1,8 +1,8 @@
-const User = require("../models/User");
-const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/appError");
+import User from "../models/User.js";
+import catchAsync from "../utils/catchAsync.js";
+import AppError from "../utils/appError.js";
 
-exports.getAllUsers = catchAsync(async (req, res, next) => {
+export const getAllUsers = catchAsync(async (req, res, next) => {
   const filter = req.query.role ? { role: req.query.role } : {};
   const users = await User.find(filter);
 
@@ -27,14 +27,14 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
   }
 });
 
-exports.getUser = (req, res) => {
+export function getUser(req, res) {
   res.status(500).json({
     status: "error",
     message: "This route is not yet defined!!",
   });
-};
+}
 
-exports.createUser = async (req, res, next) => {
+export async function createUser(req, res, next) {
   const { name, email, phone, avatar, role, password, passwordConfirm } =
     req.body;
   try {
@@ -59,9 +59,9 @@ exports.createUser = async (req, res, next) => {
     console.log(err);
     return next(new AppError(err, 500));
   }
-};
+}
 
-exports.updateUser = catchAsync(async (req, res, next) => {
+export const updateUser = catchAsync(async (req, res, next) => {
   const { id: userId } = req.params;
 
   // Update the user and return the new document
@@ -83,7 +83,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteUser = catchAsync(async (req, res, next) => {
+export const deleteUser = catchAsync(async (req, res, next) => {
   console.log(req.params);
   const { id: userId } = req.params;
   // perform the delete operation here, e.g.:

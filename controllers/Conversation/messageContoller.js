@@ -1,5 +1,5 @@
 const catchAsync = require("../../utils/catchAsync");
-const AppError = require("../../utils/appError");
+const AppError = require("../../utils/appError").default;
 const Message = require("../../models/Conversation/Message");
 const PrivateConversation = require("../../models/Conversation/PrivateConversation");
 const GroupConversation = require("../../models/Conversation/GroupConversation");

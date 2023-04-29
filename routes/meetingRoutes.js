@@ -1,6 +1,10 @@
-const router = require("express").Router();
-const Meeting = require("../models/Meeting");
-const Mentorship = require("../models/Mentorship");
+import { Router } from "express";
+
+import Meeting from "../models/Meeting.js";
+// import Mentorship from "../models/Mentorship.js";
+
+const router = Router();
+
 router.post("/", async (req, res) => {
   const { title, location, start, end, type, recipients } = req.body;
   console.log(title);
@@ -15,7 +19,7 @@ router.post("/", async (req, res) => {
 
   // get {list of mentees of a mentor}
 
-  const meeting = await new Meeting(newMeeting);
+  const meeting = new Meeting(newMeeting);
   try {
     const savedMeeting = await meeting.save();
     res.status(200).json(savedMeeting);
@@ -35,4 +39,4 @@ router.get("/", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

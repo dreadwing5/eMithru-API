@@ -1,9 +1,7 @@
-const express = require("express");
-const {
-  messageController,
-} = require("../../controllers/Conversation/messageContoller");
+import { Router } from "express";
+import { messageController } from "../../controllers/Conversation/messageContoller.js";
 
-const router = express.Router();
+const router = Router();
 
 router
   .route("/:id")
@@ -14,4 +12,4 @@ router
   .post(messageController.checkConversationType, messageController.sendMessage)
   .delete(messageController.deleteMessage);
 
-module.exports = router;
+export default router;

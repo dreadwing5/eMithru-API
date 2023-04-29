@@ -1,28 +1,33 @@
-const express = require("express");
-const userController = require("../controllers/userController");
-const authController = require("../controllers/authController");
-const threadController = require("../controllers/threadController");
+import { Router } from "express";
+import {
+  getAllUsers,
+  createUser,
+  getUser,
+  updateUser,
+  deleteUser,
+} from "../controllers/userController.js";
+import {
+  signup,
+  login,
+  forgotPassword,
+  resetPassword,
+  logout,
+} from "../controllers/authController.js";
+import { getAllThreadsOfUser } from "../controllers/threadController.js";
 
-const router = express.Router();
+const router = Router();
 
-router.post("/signup", authController.signup);
-router.post("/login", authController.login);
+router.post("/signup", signup);
+router.post("/login", login);
 
-router.post("/forgotPassword", authController.forgotPassword);
-router.patch("/resetPassword/:token", authController.resetPassword);
-router.get("/logout", authController.logout);
+router.post("/forgotPassword", forgotPassword);
+router.patch("/resetPassword/:token", resetPassword);
+router.get("/logout", logout);
 
-router
-  .route("/")
-  .get(userController.getAllUsers)
-  .post(userController.createUser);
+router.route("/").get(getAllUsers).post(createUser);
 
-router
-  .route("/:id")
-  .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
+router.route("/:id").get(getUser).patch(updateUser).delete(deleteUser);
 
-router.route("/:id/threads").get(threadController.getAllThreadsOfUser);
+router.route("/:id/threads").get(getAllThreadsOfUser);
 
-module.exports = router;
+export default router;

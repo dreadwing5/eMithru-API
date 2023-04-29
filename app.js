@@ -1,29 +1,30 @@
-const express = require("express");
-const morgan = require("morgan");
-const rateLimit = require("express-rate-limit");
-const helmet = require("helmet");
-const mongoSanitize = require("express-mongo-sanitize");
-const xss = require("xss-clean");
-const cors = require("cors");
+import express, { json } from "express";
+import morgan from "morgan";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
+import xss from "xss-clean";
+import cors from "cors";
 
-const AppError = require("./utils/appError");
-const globalErrorHandler = require("./controllers/errorController");
+import AppError from "./utils/appError.js";
+import globalErrorHandler from "./controllers/errorController.js";
 
 //routes
 
-const userRouter = require("./routes/userRoutes");
+import userRouter from "./routes/userRoutes.js";
 // const messageRouter = require("./routes/messageRoutes");
-const conversationRouter = require("./routes/conversationRoutes");
-const meetingRouter = require("./routes/meetingRoutes");
-const openAiRouter = require("./routes/openAiRoutes");
-const studentRouter = require("./routes/Student/studentRoutes");
-const attendanceRouter = require("./routes/Student/AttendanceRoutes");
-const mentorRouter = require("./routes/Student/mentorRoutes");
-const notificationRouter = require("./routes/notificationRoutes");
-const campusBuddyRouter = require("./routes/CampusBuddy/campusBuddy");
-const privateConversationRouter = require("./routes/Conversation/privateConversationRoutes");
-const messageRouter = require("./routes/Conversation/messageRoutes");
-const threadRouter = require("./routes/threadRoutes");
+// import conversationRouter from "./routes/conversationRoutes";
+// import meetingRouter from "./routes/meetingRoutes";
+// import openAiRouter from "./routes/openAiRoutes";
+// import studentRouter from "./routes/Student/studentRoutes";
+// import attendanceRouter from "./routes/Student/AttendanceRoutes";
+// import mentorRouter from "./routes/Student/mentorRoutes";
+// import notificationRouter from "./routes/notificationRoutes";
+// import campusBuddyRouter from "./routes/CampusBuddy/campusBuddy";
+// import privateConversationRouter from "./routes/Conversation/privateConversationRoutes";
+// import messageRouter from "./routes/Conversation/messageRoutes";
+import threadRouter from "./routes/threadRoutes.js";
+
 const app = express();
 
 //1) GLOBAL MIDDLEWARE
@@ -48,7 +49,7 @@ app.use("/api", limiter);
 
 //Body parser, reading data from body into req.body
 app.use(
-  express.json({
+  json({
     limit: "10kb",
   })
 );
@@ -67,17 +68,17 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/attendance", attendanceRouter);
+// app.use("/api/attendance", attendanceRouter);
 app.use("/api/users", userRouter);
-app.use("/api/messages", messageRouter);
-app.use("/api/conversations", conversationRouter);
-app.use("/api/meetings", meetingRouter);
-app.use("/api/openai", openAiRouter);
-app.use("/api/students", studentRouter);
-app.use("/api/mentors", mentorRouter);
-app.use("/api/notifications", notificationRouter);
-app.use("/api/campus-buddy", campusBuddyRouter);
-app.use("/api/private-conversations", privateConversationRouter);
+// app.use("/api/messages", messageRouter);
+// app.use("/api/conversations", conversationRouter);
+// app.use("/api/meetings", meetingRouter);
+// app.use("/api/openai", openAiRouter);
+// app.use("/api/students", studentRouter);
+// app.use("/api/mentors", mentorRouter);
+// app.use("/api/notifications", notificationRouter);
+// app.use("/api/campus-buddy", campusBuddyRouter);
+// app.use("/api/private-conversations", privateConversationRouter);
 app.use("/api/threads", threadRouter);
 
 /* app.use("/api/academic", academicRouter);
@@ -91,4 +92,4 @@ app.all("*", (req, res, next) => {
 //Error handling middleware
 app.use(globalErrorHandler);
 
-module.exports = app;
+export default app;

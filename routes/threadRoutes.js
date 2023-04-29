@@ -1,18 +1,23 @@
-const express = require("express");
-const threadController = require("../controllers/threadController");
-const router = express.Router();
+import { Router } from "express";
+import {
+  getAllThreads,
+  createNewThread,
+  getThreadById,
+  deleteThread,
+  closeThread,
+  sendMessageToThread,
+} from "../controllers/threadController.js";
 
-router
-  .route("/")
-  .get(threadController.getAllThreads)
-  .post(threadController.createNewThread);
+const router = Router();
+
+router.route("/").get(getAllThreads).post(createNewThread);
 
 router
   .route("/:threadId")
-  .get(threadController.getThreadById)
-  .delete(threadController.deleteThread)
-  .patch(threadController.closeThread);
+  .get(getThreadById)
+  .delete(deleteThread)
+  .patch(closeThread);
 
-router.route("/:threadId/messages").post(threadController.sendMessageToThread);
+router.route("/:threadId/messages").post(sendMessageToThread);
 
-module.exports = router;
+export default router;

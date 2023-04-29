@@ -1,6 +1,6 @@
 const Notification = require("../models/Notification");
 const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/appError");
+const AppError = require("../utils/appError").default;
 
 exports.getNotifications = catchAsync(async (req, res, next) => {
   const filter = { userId: req.params.userId };

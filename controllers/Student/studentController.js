@@ -1,7 +1,7 @@
 const StudentProfile = require("../../models/Student/Profile");
 
 const catchAsync = require("../../utils/catchAsync");
-const AppError = require("../../utils/appError");
+const AppError = require("../../utils/appError").default;
 const User = require("../../models/User");
 
 exports.createStudentProfile = catchAsync(async (req, res, next) => {

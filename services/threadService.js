@@ -1,5 +1,5 @@
-const Thread = require("../models/Thread");
-const { generateSummary } = require("./summaryService");
+import Thread from "../models/Thread.js";
+import { generateSummary } from "./summaryService.js";
 
 class ThreadService {
   async closeThread(threadId) {
@@ -26,4 +26,4 @@ class ThreadService {
   }
 }
 
-module.exports = ThreadService;
+export default ThreadService;

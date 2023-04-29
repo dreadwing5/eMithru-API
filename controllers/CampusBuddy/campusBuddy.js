@@ -3,7 +3,7 @@ const axios = require("axios");
 const { Configuration, OpenAIApi } = require("openai");
 
 const catchAsync = require("../../utils/catchAsync");
-const AppError = require("../../utils/appError");
+const AppError = require("../../utils/appError").default;
 
 const configuration = new Configuration({
   apiKey: process.env.OPEN_API_KEY,

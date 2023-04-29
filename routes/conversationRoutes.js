@@ -1,7 +1,8 @@
-const router = require("express").Router();
+import { Router } from "express";
 
-const Conversation = require("../models/Conversation");
+import Conversation from "../models/Conversation.js";
 
+const router = Router();
 router.get("/", async (req, res) => {
   try {
     const conversations = await Conversation.find();
@@ -46,4 +47,4 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,15 +1,15 @@
-const { promisify } = require("util");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
-const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/appError");
-const sendEmail = require("../utils/email");
+import { promisify } from "util";
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
+import catchAsync from "../utils/catchAsync.js";
+import AppError from "../utils/appError.js";
+import sendEmail from "../utils/email.js";
+
 const verfiyAsync = promisify(jwt.verify);
-const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+const signToken = (id) =>
+  jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
-};
 
 const cookieOptions = {
   expires: new Date(
@@ -20,7 +20,7 @@ const cookieOptions = {
 
 if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
-exports.signup = catchAsync(async (req, res, next) => {
+export const signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -43,7 +43,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.login = catchAsync(async (req, res, next) => {
+export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   // 1) Check if email and password exist
@@ -75,7 +75,7 @@ exports.login = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.protect = catchAsync(async (req, res, next) => {
+export const protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check if it;s there
   let token;
   if (
@@ -114,9 +114,8 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.restrictTo =
-  (...roles) =>
-  (req, res, next) => {
+export function restrictTo(...roles) {
+  return (req, res, next) => {
     // roles ['admin', 'lead-guide'] , req.user.role = 'user'  => no access
 
     //403 = Forbidden
@@ -128,8 +127,9 @@ exports.restrictTo =
 
     next();
   };
+}
 
-exports.forgotPassword = catchAsync(async (req, res, next) => {
+export const forgotPassword = catchAsync(async (req, res, next) => {
   // 1 ) Get user based on POSTed email
 
   const user = await User.findOne({ email: req.body.email });
@@ -173,9 +173,9 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     );
   }
 });
-exports.resetPassword = (req, res, next) => {};
+export function resetPassword(req, res, next) {}
 
-exports.logout = (req, res, next) => {
+export function logout(req, res, next) {
   req.logout();
   res.redirect("/");
-};
+}

@@ -1,9 +1,10 @@
-const { pbkdf2 } = require("crypto");
+import { pbkdf2 } from "crypto";
 
-const util = require("util");
-const pbkdf2Async = util.promisify(pbkdf2);
+import { promisify } from "util";
 
-exports.encrypt = async (password) => {
+const pbkdf2Async = promisify(pbkdf2);
+
+export async function encrypt(password) {
   const key = await pbkdf2Async(
     password,
     process.env.PASSWORD_SALT,
@@ -13,9 +14,9 @@ exports.encrypt = async (password) => {
   );
 
   return Promise.resolve(key.toString("hex"));
-};
+}
 
-exports.compare = async (password, hash) => {
+export async function compare(password, hash) {
   const key = await pbkdf2Async(
     password,
     process.env.PASSWORD_SALT,
@@ -25,4 +26,4 @@ exports.compare = async (password, hash) => {
   );
 
   return Promise.resolve(key.toString("hex") === hash);
-};
+}

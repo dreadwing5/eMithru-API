@@ -1,17 +1,16 @@
-const express = require("express");
+import { Router } from "express";
 
-const privateConversationController = require("../../controllers/Conversation/privateConversationController");
+import {
+  getAllConversations,
+  createNewConversation,
+  getAllConversationsOfUser,
+  deleteConversation,
+} from "../../controllers/Conversation/privateConversationController.js";
 
-const router = express.Router();
+const router = Router();
 
-router
-  .route("/")
-  .get(privateConversationController.getAllConversations)
-  .post(privateConversationController.createNewConversation);
+router.route("/").get(getAllConversations).post(createNewConversation);
 
-router
-  .route("/:id")
-  .get(privateConversationController.getAllConversationsOfUser)
-  .delete(privateConversationController.deleteConversation);
+router.route("/:id").get(getAllConversationsOfUser).delete(deleteConversation);
 
-module.exports = router;
+export default router;

@@ -1,28 +1,32 @@
-const dotenv = require("dotenv");
-const mongoose = require("mongoose");
-const { Server } = require("socket.io");
-const winston = require("winston");
+import mongoose from "mongoose";
+import { Server } from "socket.io";
+import "./config.js";
 
-const logger = winston.createLogger({
+import {
+  createLogger,
+  format as _format,
+  transports as _transports,
+} from "winston";
+
+import app from "./app.js";
+
+const logger = createLogger({
   level: "info",
-  format: winston.format.json(),
+  format: _format.json(),
   transports: [
     //
     // - Write all logs with importance level of `error` or less to `error.log`
     // - Write all logs with importance level of `info` or less to `combined.log`
     //
-    new winston.transports.File({ filename: "error.log", level: "error" }),
-    new winston.transports.File({ filename: "combined.log" }),
+    new _transports.File({ filename: "error.log", level: "error" }),
+    new _transports.File({ filename: "combined.log" }),
   ],
 });
 
 if (process.env.NODE_ENV !== "production") {
   logger.add(
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      ),
+    new _transports.Console({
+      format: _format.combine(_format.colorize(), _format.simple()),
     })
   );
 }
@@ -32,11 +36,6 @@ process.on("uncaughtException", (err) => {
   console.log(err);
   process.exit(1);
 });
-
-dotenv.config({
-  path: "./config.env",
-});
-const app = require("./app");
 
 const DB = process.env.DATABASE.replace(
   "<PASSWORD>",

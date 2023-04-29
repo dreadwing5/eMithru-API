@@ -5,4 +5,4 @@ const configuration = new Configuration({
 });
 
 const openai = new OpenAIApi(configuration);
-module.exports = openai;
+export default openai;
