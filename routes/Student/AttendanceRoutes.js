@@ -1,7 +1,7 @@
-const express = require("express");
-const router = express.Router();
-const { ObjectId } = require("mongodb");
-const Attendance = require("../../models/Attendance");
+import { Router } from "express";
+const router = Router();
+import { ObjectId } from "mongodb";
+import Attendance, { find, serialize, findOne, update, remove } from "../../models/Attendance";
 
 // Create new attendance record
 router.post("/", async (req, res, next) => {
@@ -18,8 +18,8 @@ router.post("/", async (req, res, next) => {
 // Get all attendance records
 router.get("/", async (req, res, next) => {
   try {
-    const attendance = await Attendance.find();
-    res.json(attendance.map(Attendance.serialize));
+    const attendance = await find();
+    res.json(attendance.map(serialize));
   } catch (error) {
     next(error);
   }
@@ -28,13 +28,13 @@ router.get("/", async (req, res, next) => {
 // Get attendance record by ID
 router.get("/:id", async (req, res, next) => {
   try {
-    const attendance = await Attendance.findOne({
+    const attendance = await findOne({
       _id: ObjectId(req.params.id),
     });
     if (!attendance) {
       return res.status(404).send();
     }
-    res.json(Attendance.serialize(attendance));
+    res.json(serialize(attendance));
   } catch (error) {
     next(error);
   }
@@ -43,17 +43,17 @@ router.get("/:id", async (req, res, next) => {
 // Update attendance record by ID
 router.put("/:id", async (req, res, next) => {
   try {
-    const attendance = await Attendance.findOne({
+    const attendance = await findOne({
       _id: ObjectId(req.params.id),
     });
     if (!attendance) {
       return res.status(404).send();
     }
-    await Attendance.update({ _id: ObjectId(req.params.id) }, req.body);
-    const updatedAttendance = await Attendance.findOne({
+    await update({ _id: ObjectId(req.params.id) }, req.body);
+    const updatedAttendance = await findOne({
       _id: ObjectId(req.params.id),
     });
-    res.json(Attendance.serialize(updatedAttendance));
+    res.json(serialize(updatedAttendance));
   } catch (error) {
     next(error);
   }
@@ -62,17 +62,17 @@ router.put("/:id", async (req, res, next) => {
 // Delete attendance record by ID
 router.delete("/:id", async (req, res, next) => {
   try {
-    const attendance = await Attendance.findOne({
+    const attendance = await findOne({
       _id: ObjectId(req.params.id),
     });
     if (!attendance) {
       return res.status(404).send();
     }
-    await Attendance.remove({ _id: ObjectId(req.params.id) });
+    await remove({ _id: ObjectId(req.params.id) });
     res.status(204).send();
   } catch (error) {
     next(error);
   }
 });
 
-module.exports = router;
+export default router;
