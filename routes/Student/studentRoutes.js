@@ -1,15 +1,15 @@
-const express = require("express");
+import { Router } from "express";
 
-const router = express.Router();
-const studentController = require("../../controllers/Student/studentController");
+const router = Router();
+import { getAllStudents, createStudentProfile, getStudentProfileById } from "../../controllers/Student/studentController.js";
 
 // POST /api/v1/students
-router.get("/", studentController.getAllStudents);
+router.get("/", getAllStudents);
 
-router.post("/profile", studentController.createStudentProfile);
+router.post("/profile", createStudentProfile);
 
 // GET /api/v1/students/:id
-router.get("/profile/:id", studentController.getStudentProfileById);
+router.get("/profile/:id", getStudentProfileById);
 
 // PATCH /api/v1/students/:id
 // router.patch("/:id", studentController.updateStudentProfileById);
@@ -17,4 +17,4 @@ router.get("/profile/:id", studentController.getStudentProfileById);
 // DELETE /api/v1/students/:id
 // router.delete("/:id", studentController.deleteStudentProfileById);
 
-module.exports = router;
+export default router;

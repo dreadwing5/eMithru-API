@@ -1,10 +1,10 @@
-const express = require("express");
-const router = express.Router();
-const Academics = require("../models/StudentModel/Academic");
+import { Router } from "express";
+const router = Router();
+import Academics, { findOne, find } from "../models/StudentModel/Academic";
 
 const getAcademic = async (req, res) => {
   try {
-    const academic = await Academics.findOne({ _id: req.params.id });
+    const academic = await findOne({ _id: req.params.id });
     if (!academic) {
       return res.status(404).json({ error: "Academic details not found" });
     }
@@ -18,7 +18,7 @@ const getAcademic = async (req, res) => {
 // Get all Academics
 router.get("/", async (req, res) => {
   try {
-    const academics = await Academics.find();
+    const academics = await find();
     res.json(academics);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -108,4 +108,4 @@ router.delete("/:id", getAcademic, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,8 +1,8 @@
 // Import necessary modules and models
-const express = require("express");
-const router = express.Router();
-const User = require("../../models/User");
-const Mentorship = require("../../models/Mentorship");
+import { Router } from "express";
+const router = Router();
+import User from "../../models/User";
+import Mentorship, { findOne, find as _find } from "../../models/Mentorship";
 
 // API route for creating a new mentorship
 router.post("/", async (req, res, next) => {
@@ -98,4 +98,4 @@ router.get("/:mentorId/mentees", async (req, res, next) => {
 });
 
 // Export the router
-module.exports = router;
+export default router;

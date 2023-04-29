@@ -1,6 +1,6 @@
-const express = require("express");
-const router = express.Router();
-const Admission = require("../models/Admissions");
+import { Router } from "express";
+const router = Router();
+import Admission, { find, findById, findByIdAndUpdate, findByIdAndDelete } from "../models/Admissions";
 
 // Create Admission
 router.post("/admissions", async (req, res) => {
@@ -16,7 +16,7 @@ router.post("/admissions", async (req, res) => {
 // Read All Admissions
 router.get("/admissions", async (req, res) => {
   try {
-    const admissions = await Admission.find();
+    const admissions = await find();
     res.json(admissions);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -26,7 +26,7 @@ router.get("/admissions", async (req, res) => {
 // Read Admission by ID
 router.get("/admissions/:id", async (req, res) => {
   try {
-    const admission = await Admission.findById(req.params.id);
+    const admission = await findById(req.params.id);
     if (!admission) {
       return res.status(404).json({ error: "Admission not found" });
     }
@@ -39,7 +39,7 @@ router.get("/admissions/:id", async (req, res) => {
 // Update Admission by ID
 router.patch("/admissions/:id", async (req, res) => {
   try {
-    const admission = await Admission.findByIdAndUpdate(
+    const admission = await findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true }
@@ -56,7 +56,7 @@ router.patch("/admissions/:id", async (req, res) => {
 // Delete Admission by ID
 router.delete("/admissions/:id", async (req, res) => {
   try {
-    const admission = await Admission.findByIdAndDelete(req.params.id);
+    const admission = await findByIdAndDelete(req.params.id);
     if (!admission) {
       return res.status(404).json({ error: "Admission not found" });
     }
@@ -66,4 +66,4 @@ router.delete("/admissions/:id", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
