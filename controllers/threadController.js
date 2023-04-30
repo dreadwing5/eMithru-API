@@ -34,13 +34,10 @@ export const createNewThread = catchAsync(async (req, res, next) => {
     author,
     participants,
   });
-  await newThread
-    .populate({
-      path: "participants",
-      select: "name avatar",
-    })
-    .execPopulate();
-
+  await newThread.populate({
+    path: "participants",
+    select: "name avatar",
+  });
   res.status(201).json({
     status: "success",
     data: {
