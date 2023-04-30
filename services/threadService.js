@@ -13,7 +13,6 @@ class ThreadService {
         select: "name avatar role",
       })
       .populate("messages");
-
     if (updatedThread) {
       //TODO : We want to limit the access to the api
 
