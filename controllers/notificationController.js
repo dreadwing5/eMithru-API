@@ -1,8 +1,8 @@
-const Notification = require("../models/Notification");
-const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/appError").default;
+import Notification from "../models/Notification.js";
+import catchAsync from "../utils/catchAsync.js";
+import AppError from "../utils/appError.js";
 
-exports.getNotifications = catchAsync(async (req, res, next) => {
+export const getNotifications = catchAsync(async (req, res, next) => {
   const filter = { userId: req.params.userId };
   if (req.query.unread) {
     filter.isUnread = true;
@@ -11,7 +11,7 @@ exports.getNotifications = catchAsync(async (req, res, next) => {
   res.status(200).json({ notifications });
 });
 
-exports.createNotification = catchAsync(async (req, res, next) => {
+export const createNotification = catchAsync(async (req, res, next) => {
   const { userId, title, description, type } = req.body;
   const notification = await Notification.create({
     userId,

@@ -1,10 +1,10 @@
-const StudentProfile = require("../../models/Student/Profile");
+import StudentProfile from "../../models/Student/Profile.js";
 
-const catchAsync = require("../../utils/catchAsync");
-const AppError = require("../../utils/appError").default;
-const User = require("../../models/User");
+import catchAsync from "../../utils/catchAsync.js";
+import AppError from "../../utils/appError.js";
+import User from "../../models/User.js";
 
-exports.createStudentProfile = catchAsync(async (req, res, next) => {
+export const createStudentProfile = catchAsync(async (req, res, next) => {
   // create a new student personal data document
   const {
     user,
@@ -77,7 +77,7 @@ exports.createStudentProfile = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getStudentProfileById = catchAsync(async (req, res, next) => {
+export const getStudentProfileById = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
   const studentProfile = await StudentProfile.findById(id);
@@ -94,7 +94,7 @@ exports.getStudentProfileById = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAllStudents = async (req, res, next) => {
+export async function getAllStudents(req, res, next) {
   try {
     const students = await User.aggregate([
       {
@@ -174,4 +174,4 @@ exports.getAllStudents = async (req, res, next) => {
       message: "Server error",
     });
   }
-};
+}

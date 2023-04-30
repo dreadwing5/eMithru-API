@@ -1,13 +1,12 @@
-import mongoose from "mongoose";
 import { Server } from "socket.io";
-import "./config.js";
-
 import {
   createLogger,
   format as _format,
   transports as _transports,
 } from "winston";
 
+import "./config.js";
+import connectDB from "./utils/db.js";
 import app from "./app.js";
 
 const logger = createLogger({
@@ -37,21 +36,7 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-const DB = process.env.DATABASE.replace(
-  "<PASSWORD>",
-  process.env.DATABASE_PASSWORD
-);
-
-mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("DB CONNECTED SUCCESSFULLY!");
-  });
+connectDB();
 
 const port = process.env.PORT || 8000;
 

@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const { Schema } = mongoose;
+const { model, Schema } = mongoose;
 
 const studentProfileSchema = new Schema({
   fullName: {
@@ -9,7 +9,7 @@ const studentProfileSchema = new Schema({
     lastName: { type: String, required: true },
   },
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "Users",
     required: true,
   },
@@ -51,6 +51,6 @@ const studentProfileSchema = new Schema({
   photo: String,
 });
 
-const StudentProfile = mongoose.model("StudentProfile", studentProfileSchema);
+const StudentProfile = model("StudentProfile", studentProfileSchema);
 
-module.exports = StudentProfile;
+export default StudentProfile;

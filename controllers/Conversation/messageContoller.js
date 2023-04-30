@@ -1,8 +1,8 @@
-const catchAsync = require("../../utils/catchAsync");
-const AppError = require("../../utils/appError").default;
-const Message = require("../../models/Conversation/Message");
-const PrivateConversation = require("../../models/Conversation/PrivateConversation");
-const GroupConversation = require("../../models/Conversation/GroupConversation");
+import catchAsync from "../../utils/catchAsync.js";
+import AppError from "../../utils/appError.js";
+import Message from "../../models/Conversation/Message.js";
+import GroupConversation from "../../models/Conversation/GroupConversation.js";
+import PrivateConversation from "../../models/Conversation/PrivateConversation.js";
 
 class ConversationAdapter {
   constructor(conversation, conversationModel) {
@@ -25,7 +25,7 @@ class ConversationAdapter {
   }
 }
 
-exports.messageController = {
+const messageController = {
   sendMessage: catchAsync(async (req, res, next) => {
     const { body, senderId } = req.body;
     const conversation = req.conversationAdapter;
@@ -84,3 +84,5 @@ exports.messageController = {
     next();
   },
 };
+
+export default messageController;

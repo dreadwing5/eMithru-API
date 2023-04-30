@@ -1,8 +1,9 @@
 // Import necessary modules and models
 import { Router } from "express";
+import User from "../../models/User.js";
+import Mentorship from "../../models/Mentorship.js";
+
 const router = Router();
-import User from "../../models/User";
-import Mentorship, { findOne, find as _find } from "../../models/Mentorship";
 
 // API route for creating a new mentorship
 router.post("/", async (req, res, next) => {

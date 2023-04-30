@@ -1,22 +1,26 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const PrivateConversationSchema = new mongoose.Schema({
+const { Schema, model } = mongoose;
+
+const PrivateConversationSchema = new Schema({
   type: { type: String, enum: ["private"], default: "private" },
   participants: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Users",
     },
   ],
   messages: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Messages",
     },
   ],
 });
 
-module.exports = mongoose.model(
+const PrivateConversation = model(
   "PrivateConversation",
   PrivateConversationSchema
 );
+
+export default PrivateConversation;

@@ -1,7 +1,7 @@
-const catchAsync = require("../../utils/catchAsync");
-const PrivateConversation = require("../../models/Conversation/PrivateConversation");
+import catchAsync from "../../utils/catchAsync.js";
+import PrivateConversation from "../../models/Conversation/PrivateConversation.js";
 
-exports.getAllConversations = catchAsync(async (req, res, next) => {
+export const getAllConversations = catchAsync(async (req, res, next) => {
   //   const userId = req.user._id;
 
   const conversations = await PrivateConversation.find().populate({
@@ -17,7 +17,7 @@ exports.getAllConversations = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAllConversationsOfUser = catchAsync(async (req, res, next) => {
+export const getAllConversationsOfUser = catchAsync(async (req, res, next) => {
   //   const userId = req.user._id;
 
   const { id: userId } = req.params;
@@ -36,7 +36,7 @@ exports.getAllConversationsOfUser = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createNewConversation = catchAsync(async (req, res, next) => {
+export const createNewConversation = catchAsync(async (req, res, next) => {
   const { participants } = req.body;
   const newConversation = await PrivateConversation.create({ participants });
   res.status(201).json({
@@ -47,7 +47,7 @@ exports.createNewConversation = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteConversation = catchAsync(async (req, res, next) => {
+export const deleteConversation = catchAsync(async (req, res, next) => {
   const conversationId = req.params.id;
   await PrivateConversation.findByIdAndDelete(conversationId);
 

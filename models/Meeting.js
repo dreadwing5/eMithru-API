@@ -1,6 +1,7 @@
-const mongoose = require("mongoose");
-const meetingSchema = new mongoose.Schema({
-  recipients: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
+import mongoose from "mongoose";
+const { Schema, model } = mongoose;
+const meetingSchema = new Schema({
+  recipients: [{ type: Schema.Types.ObjectId, ref: "Users" }],
   title: {
     type: String,
     required: true,
@@ -23,6 +24,6 @@ const meetingSchema = new mongoose.Schema({
   },
 });
 
-const Meeting = mongoose.model("meeting", meetingSchema);
+const Meeting = model("meeting", meetingSchema);
 
-module.exports = Meeting;
+export default Meeting;

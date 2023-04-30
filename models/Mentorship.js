@@ -1,13 +1,15 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const mentorshipSchema = new mongoose.Schema({
+const { Schema, model } = mongoose;
+
+const mentorshipSchema = new Schema({
   mentor: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "Users",
     required: true,
   },
   mentee: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "Users",
     required: true,
   },
@@ -32,4 +34,4 @@ mentorshipSchema.path("mentor").validate(async function (value) {
   return count < maxStudentsPerMentor;
 }, "A mentor cannot have more than 16 students.");
 
-module.exports = mongoose.model("Mentorship", mentorshipSchema);
+export default model("Mentorship", mentorshipSchema);

@@ -10,20 +10,18 @@ import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/errorController.js";
 
 //routes
-
-import userRouter from "./routes/userRoutes.js";
+// import userRouter from "./routes/userRoutes.js";
 // const messageRouter = require("./routes/messageRoutes");
-// import conversationRouter from "./routes/conversationRoutes";
-// import meetingRouter from "./routes/meetingRoutes";
-// import openAiRouter from "./routes/openAiRoutes";
-// import studentRouter from "./routes/Student/studentRoutes";
-// import attendanceRouter from "./routes/Student/AttendanceRoutes";
-// import mentorRouter from "./routes/Student/mentorRoutes";
-// import notificationRouter from "./routes/notificationRoutes";
-// import campusBuddyRouter from "./routes/CampusBuddy/campusBuddy";
-// import privateConversationRouter from "./routes/Conversation/privateConversationRoutes";
-// import messageRouter from "./routes/Conversation/messageRoutes";
-import threadRouter from "./routes/threadRoutes.js";
+// import conversationRouter from "./routes/conversationRoutes.js";
+// import meetingRouter from "./routes/meetingRoutes.js";
+// import studentRouter from "./routes/Student/studentRoutes.js";
+// import attendanceRouter from "./routes/Student/AttendanceRoutes.js";
+// import mentorRouter from "./routes/Student/mentorRoutes.js";
+// import notificationRouter from "./routes/notificationRoutes.js";
+// import campusBuddyRouter from "./routes/CampusBuddy/campusBuddy.js";
+// import privateConversationRouter from "./routes/Conversation/privateConversationRoutes.js";
+// import messageRouter from "./routes/Conversation/messageRoutes.js";
+// import threadRouter from "./routes/threadRoutes.js";
 
 const app = express();
 
@@ -68,19 +66,17 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use("/api/attendance", attendanceRouter);
-app.use("/api/users", userRouter);
+// app.use("/api/users", userRouter);
 // app.use("/api/messages", messageRouter);
 // app.use("/api/conversations", conversationRouter);
 // app.use("/api/meetings", meetingRouter);
-// app.use("/api/openai", openAiRouter);
 // app.use("/api/students", studentRouter);
 // app.use("/api/mentors", mentorRouter);
 // app.use("/api/notifications", notificationRouter);
 // app.use("/api/campus-buddy", campusBuddyRouter);
 // app.use("/api/private-conversations", privateConversationRouter);
-app.use("/api/threads", threadRouter);
-
+// app.use("/api/threads", threadRouter);
+// app.use("/api/attendance", attendanceRouter);
 /* app.use("/api/academic", academicRouter);
 app.use("/api/admission", admissionRouter); */
 

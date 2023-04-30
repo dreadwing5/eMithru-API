@@ -1,9 +1,9 @@
-const axios = require("axios");
+import axios from "axios";
 
-const { Configuration, OpenAIApi } = require("openai");
+import { Configuration, OpenAIApi } from "openai";
 
-const catchAsync = require("../../utils/catchAsync");
-const AppError = require("../../utils/appError").default;
+import catchAsync from "../../utils/catchAsync.js";
+import AppError from "../../utils/appError.js";
 
 const configuration = new Configuration({
   apiKey: process.env.OPEN_API_KEY,
@@ -38,7 +38,7 @@ const getSchedule = async (query) => {
   // Implement logic to extract key-value pairs and call the schedule API
 };
 
-exports.handleUserQuery = catchAsync(async (req, res, next) => {
+export const handleUserQuery = catchAsync(async (req, res, next) => {
   const userQuery = req.body.query;
   const userIntent = await getIntentFromChatGpt(userQuery);
 
