@@ -19,7 +19,7 @@ router.post("/", async (req, res, next) => {
 router.get("/", async (req, res, next) => {
   try {
     const attendance = await Attendance.find();
-    res.json(attendance.map(Attendance.serialize));
+    res.json(attendance);
   } catch (error) {
     next(error);
   }
