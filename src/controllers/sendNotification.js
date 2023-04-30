@@ -1,5 +1,5 @@
-const cron = require("node-cron");
-const nodemailer = require("nodemailer");
+/* import { schedule } from "node-cron";
+import { createTransport } from "nodemailer";
 
 const sendNotification = async (to, subject, body) => {
   const mailOptions = {
@@ -11,7 +11,7 @@ const sendNotification = async (to, subject, body) => {
 
   const Student = await Student.find().json();
 
-  const transporter = nodemailer.createTransport({
+  const transporter = createTransport({
     service: "gmail",
     auth: {
       user: "your_email_address",
@@ -43,6 +43,7 @@ const checkMentalHealthStatus = () => {
   }
 };
 
-cron.schedule("0 0 1 * *", () => {
+schedule("0 0 1 * *", () => {
   checkMentalHealthStatus();
 });
+ */

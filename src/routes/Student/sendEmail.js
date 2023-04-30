@@ -1,10 +1,11 @@
 import cron from "node-cron";
 import nodemailer from "nodemailer";
-import Attendance from "../../models/Attendance";
-import User from "../../models/User";
-import Mentorship from "../../models/Mentorship";
+import Attendance from "../../models/Attendance.js";
+import User from "../../models/User.js";
+import Mentorship from "../../models/Mentorship.js";
 
 // Define the cron job function
+//TODO : Code is not acceptable
 const sendAttendanceNotifications = async () => {
   try {
     // Fetch all attendance records from the database

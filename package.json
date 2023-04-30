@@ -6,10 +6,9 @@
   },
   "type": "module",
   "description": "A mentor platform for students",
-  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js",
+    "dev": "nodemon src/server.js",
     "start:prod": "NODE_ENV=production nodemon server.js"
   },
   "repository": {
@@ -37,7 +36,6 @@
     "morgan": "^1.10.0",
     "node-cron": "^3.0.2",
     "nodemailer": "^6.9.1",
-    "nodemon": "^2.0.7",
     "openai": "^3.2.1",
     "socket.io": "^4.5.4",
     "validator": "^13.7.0",
@@ -53,6 +51,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
+    "nodemon": "^2.0.7",
     "prettier": "^2.3.2"
   }
 }
