@@ -5,7 +5,7 @@ import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 import xss from "xss-clean";
 import cors from "cors";
-
+import sendAttendanceNotifications from "./routes/Student/sendEmail";
 import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/errorController.js";
 
@@ -76,6 +76,7 @@ app.use("/api/campus-buddy", campusBuddyRouter);
 app.use("/api/private-conversations", privateConversationRouter);
 app.use("/api/threads", threadRouter);
 app.use("/api/attendance", attendanceRouter);
+sendAttendanceNotifications();
 /* app.use("/api/academic", academicRouter);
 app.use("/api/admission", admissionRouter); */
 
