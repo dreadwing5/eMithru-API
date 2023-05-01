@@ -3,7 +3,7 @@ import logger from "../utils/logger.js";
 class SocketController {
   joinRoom(socket) {
     return (room) => {
-      logger.info(`User ${socket.userId} joining room ${room}`);
+      logger.info(`User ${socket.id} joining room ${room}`);
       socket.join(room);
 
       // Get the clients in a room
@@ -13,7 +13,7 @@ class SocketController {
       if (clientsInRoom) {
         // Get an array of userIds from the clients in the room
         const userIdsInRoom = [...clientsInRoom].map(
-          (clientId) => socket.server.sockets.sockets.get(clientId).userId
+          (clientId) => socket.server.sockets.sockets.get(clientId).id
         );
 
         // Log the userIds
@@ -26,7 +26,7 @@ class SocketController {
 
   leaveRoom(socket) {
     return (room) => {
-      logger.info(`User ${socket.userId} leaving room ${room}`);
+      logger.info(`User ${socket.id} leaving room ${room}`);
       socket.leave(room);
     };
   }
@@ -48,7 +48,7 @@ class SocketController {
 
   disconnect(socket) {
     return () => {
-      logger.info(`Socket disconnected: ${socket.userId}`);
+      logger.info(`Socket disconnected: ${socket.id}`);
     };
   }
 

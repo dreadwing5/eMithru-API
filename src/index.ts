@@ -3,7 +3,6 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
-import xss from "xss-clean";
 import cors from "cors";
 import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/errorController.js";
@@ -38,7 +37,7 @@ if (process.env.NODE_ENV === "development") {
 
 const limiter = rateLimit({
   max: 100,
-  windowMS: 60 * 60 * 1000,
+  windowMs: 60 * 60 * 1000,
   //allow 100 requests per hour per IP
   message: "Too many requests from this IP, please try again in an hour!",
 });
@@ -54,16 +53,9 @@ app.use(
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 
+//TODO : Find out how can we sanitize request, this library is outdated
 // Data sanitization against XSS
-app.use(xss());
-
-//Test middleware
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  console.log(`Requested at ${req.requestTime}`);
-
-  next();
-});
+// app.use(xss());
 
 app.use("/api/users", userRouter);
 app.use("/api/messages", messageRouter);
