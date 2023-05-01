@@ -8,7 +8,7 @@ class Logger {
   constructor() {
     this.logger = createLogger({
       level: "info",
-      format: _format.json(),
+      format: _format.combine(_format.splat(), _format.json()),
       transports: [
         new _transports.File({ filename: "error.log", level: "error" }),
         new _transports.File({ filename: "combined.log" }),
@@ -18,7 +18,12 @@ class Logger {
     if (process.env.NODE_ENV !== "production") {
       this.logger.add(
         new _transports.Console({
-          format: _format.combine(_format.colorize(), _format.simple()),
+          format: _format.combine(
+            _format.colorize(),
+            _format.simple(),
+            _format.splat(),
+            _format.json()
+          ),
         })
       );
     }

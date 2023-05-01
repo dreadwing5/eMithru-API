@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { handleUserQuery } from "../../controllers/CampusBuddy/campusBuddy.js";
+import handleUserQuery from "../../controllers/CampusBuddy/campusBuddy.js";
 
 const router = Router();
 

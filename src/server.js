@@ -4,7 +4,7 @@ import app from "./index.js";
 import SocketManager from "./utils/socketManager.js";
 import socketController from "./controllers/socketController.js";
 
-process.on("uncaughtException", (err: Error) => {
+process.on("uncaughtException", (err) => {
   console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
   console.log(err);
   process.exit(1);
@@ -25,11 +25,11 @@ const io = SocketManager.createServer(server, {
   },
 });
 
-io.on("connection", (socket: any) => {
+io.on("connection", (socket) => {
   socketController.handleEvents(socket);
 });
 
-process.on("unhandledRejection", (err: Error) => {
+process.on("unhandledRejection", (err) => {
   console.log(err.name, err.message);
   console.log("UNHANDLED REJECTION! 💥 Shutting down...");
   server.close(() => {

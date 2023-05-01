@@ -1,4 +1,5 @@
 import AppError from "../utils/appError.js";
+import logger from "../utils/logger.js";
 
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}.`;
@@ -22,7 +23,7 @@ const handleJWTError = () =>
 const handleJWTExpiredError = () =>
   new AppError("Your token has expired!, Please log in again.", 401);
 const sendErrorDev = (err, res) => {
-  console.error(err);
+  logger.error(`ERROR 💥  ${err}`);
   res.status(err.statusCode).json({
     status: err.status,
     message: err.message,
@@ -43,7 +44,7 @@ const sendErrorProd = (err, res) => {
     //Programming error or other unknown error : don't leak error details
   } else {
     //1) Log error
-    console.error("ERROR 💥 ", err);
+    logger.error(`ERROR 💥  ${err}`);
 
     //2) Send generic message
     res.status(500).json({

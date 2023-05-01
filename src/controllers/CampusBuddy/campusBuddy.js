@@ -1,15 +1,24 @@
-import axios from "axios";
-
-import { Configuration, OpenAIApi } from "openai";
-
 import catchAsync from "../../utils/catchAsync.js";
-import AppError from "../../utils/appError.js";
+import campusBuddy from "../../services/campusBuddy.js";
 
-const configuration = new Configuration({
-  apiKey: process.env.OPEN_API_KEY,
+const handleUserQuery = catchAsync(async (req, res, next) => {
+  const { query } = req.body;
+  const response = await campusBuddy.generateResponse(query);
+  res.status(200).json({
+    status: "success",
+    data: {
+      output: response.output_text,
+    },
+  });
 });
 
-const openai = new OpenAIApi(configuration);
+export default handleUserQuery;
+
+/* const configuration = new Configuration({
+  apiKey: process.env.OPEN_API_KEY,
+}); */
+
+/* const openai = new OpenAIApi(configuration);
 
 const getIntentFromChatGpt = async (query) => {
   const prompt = `Intent of the following user query:\nQuery: ${query}\nIntent: `;
@@ -36,23 +45,4 @@ const createMeeting = async (query) => {
 
 const getSchedule = async (query) => {
   // Implement logic to extract key-value pairs and call the schedule API
-};
-
-export const handleUserQuery = catchAsync(async (req, res, next) => {
-  const userQuery = req.body.query;
-  const userIntent = await getIntentFromChatGpt(userQuery);
-
-  let response;
-
-  switch (userIntent) {
-    case "create_meeting":
-      response = await createMeeting(userQuery);
-      break;
-    case "get_schedule":
-      response = await getSchedule(userQuery);
-      break;
-    default:
-      response = { error: "Unknown intent" };
-  }
-  res.status(200).json(response);
-});
+}; */
