@@ -4,10 +4,10 @@ import Message from "../models/Conversation/Message.js";
 import AppError from "../utils/appError.js";
 import ThreadService from "../services/threadService.js";
 
+const threadService = new ThreadService();
+
 export const closeThread = catchAsync(async (req, res, next) => {
   const { threadId } = req.params;
-  const threadService = new ThreadService();
-
   try {
     const updatedThread = await threadService.closeThread(threadId);
 
@@ -28,12 +28,12 @@ export const closeThread = catchAsync(async (req, res, next) => {
 
 export const createNewThread = catchAsync(async (req, res, next) => {
   const { author, participants, title, topic } = req.body;
-  const newThread = await Thread.create({
-    title,
-    topic,
+  const newThread = await threadService.createThread(
     author,
     participants,
-  });
+    title,
+    topic
+  );
   await newThread.populate({
     path: "participants",
     select: "name avatar",

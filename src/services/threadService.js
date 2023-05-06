@@ -23,6 +23,21 @@ class ThreadService {
 
     return updatedThread;
   }
+
+  async createThread(author, participants, title, topic) {
+    const newThread = await Thread.create({
+      title,
+      topic,
+      author,
+      participants,
+    });
+    await newThread.populate({
+      path: "participants",
+      select: "name avatar",
+    });
+
+    return newThread;
+  }
 }
 
 export default ThreadService;

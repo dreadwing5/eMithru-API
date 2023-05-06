@@ -1,8 +1,16 @@
 import { Router } from "express";
-import { submitAttendanceData } from "../../controllers/Student/attendanceController.js";
+import {
+  submitAttendanceData,
+  deleteAllAttendance,
+} from "../../controllers/Student/attendanceController.js";
 
 const router = Router();
 
-router.post("/submit", submitAttendanceData);
+router.route("/:userId").post(submitAttendanceData);
+router.route("/:userId").delete(deleteAllAttendance);
 
 export default router;
+
+// API END Point : /api/students/attendance/:userId
+
+// MOCK DATA :
