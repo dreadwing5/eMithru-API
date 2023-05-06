@@ -31,7 +31,7 @@ export const checkMinimumAttendance = async (attendanceData) => {
   if (overallAttendance < MINIMUM_ATTENDANCE_CRITERIA) {
     // Get the mentor of the student
     // const mentor = await getMentor(userID);
-    const mentor = "6440840795719c38cc99d814";
+    const mentor = "644a733c18d4e8d70b7bd5b6";
 
     //Use some hard coded value
 
