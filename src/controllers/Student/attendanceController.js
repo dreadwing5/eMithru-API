@@ -1,10 +1,26 @@
+import axios from "axios";
 import Attendance from "../../models/Student/Attendance.js";
-import catchAsync from "../../utils/catchAsync.js";
 import ThreadService from "../../services/threadService.js";
 
 const threadService = new ThreadService();
 
 const MINIMUM_ATTENDANCE_CRITERIA = 75;
+
+const sendAttendanceReport = async (attendanceData) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:8080/generate_attendance_report",
+      { attendanceData }
+    );
+
+    if (response.status !== 200) {
+      throw new Error(`Error sending attendance report: ${response.data}`);
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error(`Error sending attendance report: ${error}`);
+  }
+};
 
 export const checkMinimumAttendance = async (attendanceData) => {
   if (!attendanceData || !attendanceData.subjects) {
@@ -29,32 +45,56 @@ export const checkMinimumAttendance = async (attendanceData) => {
   const overallAttendance = (attendedClasses / totalClasses) * 100;
 
   if (overallAttendance < MINIMUM_ATTENDANCE_CRITERIA) {
-    // Get the mentor of the student
-    // const mentor = await getMentor(userID);
-    const mentor = "644a733c18d4e8d70b7bd5b6";
+    try {
+      // Send attendance report to the API
+      await sendAttendanceReport(attendanceData);
 
-    //Use some hard coded value
+      // Get the mentor of the student
+      // const mentor = await getMentor(userID);
+      const mentor = "644a733c18d4e8d70b7bd5b6"; // Use some hard coded value
 
-    // Create a thread with the student and mentor
-    await threadService.createThread(
-      mentor,
-      [userId, mentor],
-      `Attendance issue for ${month} in semester ${semester}`,
-      "attendance"
-    );
+      // Create a thread with the student and mentor
+      await threadService.createThread(
+        mentor,
+        [userId, mentor],
+        `Attendance issue for ${month} in semester ${semester}`,
+        "attendance"
+      );
 
-    // Send an email to the mentor with the attendance report
-    // sendAttendanceReportToMentor(mentor, attendanceData);
-
-    console.log("SENDING REPORT");
+      console.log("SENDING REPORT");
+    } catch (error) {
+      console.error("Error in checkMinimumAttendance:", error);
+      throw error;
+    }
   }
 
   return overallAttendance;
 };
 
+export const submitAttendanceData = async (req, res) => {
+  try {
+    const attendanceData = req.body;
+    attendanceData.userId = req.params.userId;
+
+    attendanceData.overallAttendance = await checkMinimumAttendance(
+      attendanceData
+    );
+    const attendance = await Attendance.create(attendanceData);
+    res.status(201).json({
+      status: "success",
+      data: {
+        attendance,
+      },
+    });
+  } catch (error) {
+    console.error("Error in submitAttendanceData:", error.message);
+    res.status(400).json({ message: error.message });
+  }
+};
+
 //This is for testing purposes, we want to quickly delete data
 
-export const deleteAllAttendance = catchAsync(async (req, res) => {
+export const deleteAllAttendance = async (req, res) => {
   const userId = req.params.userId;
 
   // Use Mongoose to delete all attendance records with the specified user ID
@@ -69,22 +109,4 @@ export const deleteAllAttendance = catchAsync(async (req, res) => {
   res
     .status(204)
     .json({ message: "All attendance records deleted successfully" });
-});
-
-export const submitAttendanceData = catchAsync(async (req, res, next) => {
-  const attendanceData = req.body;
-  // attendanceData.userID = req.user._id;//TODO: Whene user is authenticated
-  attendanceData.userId = req.params.userId;
-
-  attendanceData.overallAttendance = await checkMinimumAttendance(
-    attendanceData
-  );
-  const attendance = await Attendance.create(attendanceData);
-  res.status(201).json({
-    status: "success",
-    data: {
-      attendance,
-    },
-  }); // Use Mongoose to delete all attendance records with the specified user ID
-  // const result = await Attendance.deleteMany({ userId: userId });
-});
+};
