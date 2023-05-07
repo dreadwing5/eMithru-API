@@ -14,7 +14,6 @@ import conversationRouter from "./routes/conversationRoutes.js";
 import meetingRouter from "./routes/meetingRoutes.js";
 import studentRouter from "./routes/Student/studentRoutes.js";
 import attendanceRouter from "./routes/Student/attendanceRoutes.js";
-// import attendanceRouter from "./routes/Student/attendanceRoutes.js";
 import mentorRouter from "./routes/Student/mentorRoutes.js";
 import notificationRouter from "./routes/notificationRoutes.js";
 import campusBuddyRouter from "./routes/CampusBuddy/campusBuddy.js";

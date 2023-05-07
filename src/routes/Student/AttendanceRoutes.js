@@ -6,11 +6,6 @@ import {
 
 const router = Router();
 
-router.route("/:userId").post(submitAttendanceData);
-router.route("/:userId").delete(deleteAllAttendance);
+router.route("/:userId").post(submitAttendanceData).delete(deleteAllAttendance);
 
 export default router;
-
-// API END Point : /api/students/attendance/:userId
-
-// MOCK DATA :
