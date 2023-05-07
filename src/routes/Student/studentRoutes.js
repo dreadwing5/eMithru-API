@@ -1,7 +1,11 @@
 import { Router } from "express";
+import {
+  getAllStudents,
+  createStudentProfile,
+  getStudentProfileById,
+} from "../../controllers/Student/studentController.js";
 
 const router = Router();
-import { getAllStudents, createStudentProfile, getStudentProfileById } from "../../controllers/Student/studentController.js";
 
 // POST /api/v1/students
 router.get("/", getAllStudents);
