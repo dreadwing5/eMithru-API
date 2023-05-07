@@ -8,11 +8,10 @@
   "description": "A mentor platform for students",
   "scripts": {
     "start:ts": "tsc -w",
-    "start:js": "nodemon dist/server.js",
-    "dev": "nodemon src/server.js",
+    "dev": "NODE_ENV=development nodemon src/server.js",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:prod": "NODE_ENV=production nodemon server.js"
+    "start:prod": "NODE_ENV=production node server.js"
   },
   "repository": {
     "type": "git",

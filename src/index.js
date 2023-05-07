@@ -30,7 +30,16 @@ app.use(cors());
 
 //Set security HTTP headers
 
-app.use(helmet());
+if (process.env.NODE_ENV === "production") {
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+      xDownloadOptions: false,
+    })
+  );
+} else {
+  app.use(helmet());
+}
 
 //Development logging
 if (process.env.NODE_ENV === "development") {

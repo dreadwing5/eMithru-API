@@ -1,3 +1,8 @@
 import dotenv from "dotenv";
 
-dotenv.config({ path: "config.env" });
+const path =
+  process.env.NODE_ENV === "developement"
+    ? ".env.development"
+    : ".env.production";
+
+dotenv.config({ path });
