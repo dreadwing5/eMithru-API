@@ -9,9 +9,9 @@
   "scripts": {
     "start:ts": "tsc -w",
     "dev": "NODE_ENV=development nodemon src/server.js",
+    "start:prod": "NODE_ENV=production node src/server.js",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start:prod": "NODE_ENV=production node server.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",

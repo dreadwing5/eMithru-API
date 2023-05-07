@@ -5,12 +5,15 @@ import ThreadService from "../../services/threadService.js";
 const threadService = new ThreadService();
 
 const MINIMUM_ATTENDANCE_CRITERIA = 75;
+const BASE_URL = process.env.PYTHON_API;
 
 const sendAttendanceReport = async (attendanceData) => {
   try {
     const response = await axios.post(
-      "http://localhost:8080/generate_attendance_report",
-      { attendanceData }
+      `${BASE_URL}/generate_attendance_report`,
+      {
+        attendanceData,
+      }
     );
 
     if (response.status !== 200) {
