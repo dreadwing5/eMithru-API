@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   submitAttendanceData,
   deleteAllAttendance,
-} from "../../controllers/Student/attendanceController.js";
+} from "../controllers/Student/attendanceController.js";
 
 const router = Router();
 
