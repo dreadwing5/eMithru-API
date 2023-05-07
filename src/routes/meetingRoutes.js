@@ -39,4 +39,21 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.delete("/:meetId", async (req, res) => {
+  const { meetId } = req.params;
+  try {
+    const deletedMeeting = await Meeting.findByIdAndDelete(meetId);
+
+    if (!deletedMeeting) {
+      return res.status(404).json({ message: "Meeting not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Meeting deleted successfully", deletedMeeting });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 export default router;
