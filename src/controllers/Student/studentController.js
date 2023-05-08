@@ -94,84 +94,58 @@ export const getStudentProfileById = catchAsync(async (req, res, next) => {
   });
 });
 
-export async function getAllStudents(req, res, next) {
-  try {
-    const students = await User.aggregate([
-      {
-        $match: {
-          role: "student",
+export const getAllStudents = catchAsync(async (req, res, next) => {
+  const students = await User.aggregate([
+    {
+      $match: {
+        role: "student",
+      },
+    },
+    {
+      $lookup: {
+        from: "mentorships",
+        localField: "_id",
+        foreignField: "menteeId",
+        as: "mentorship",
+      },
+    },
+    {
+      $unwind: {
+        path: "$mentorship",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "mentorship.mentorId",
+        foreignField: "_id",
+        as: "mentorData",
+      },
+    },
+    {
+      $unwind: {
+        path: "$mentorData",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        role: 1,
+        mentor: {
+          mentorId: "$mentorData._id",
+          name: "$mentorData.name",
+          startDate: "$mentorship.startDate",
+          endDate: "$mentorship.endDate",
         },
       },
-      {
-        $lookup: {
-          from: "mentorships",
-          localField: "_id",
-          foreignField: "mentee",
-          as: "mentorship",
-        },
-      },
-      {
-        $unwind: {
-          path: "$mentorship",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "mentorship.mentor",
-          foreignField: "_id",
-          as: "mentorData",
-        },
-      },
-      {
-        $unwind: {
-          path: "$mentorData",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $lookup: {
-          from: "studentprofiles",
-          localField: "_id",
-          foreignField: "user",
-          as: "studentProfile",
-        },
-      },
-      {
-        $unwind: "$studentProfile",
-      },
-      {
-        $addFields: {
-          name: "$name",
-          usn: "$studentProfile.usn",
-          mentor: {
-            mentor_id: "$mentorData._id",
-            name: "$mentorData.name",
-            startDate: "$mentorship.startDate",
-            endDate: "$mentorship.endDate",
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          usn: 1,
-          mentor: 1,
-        },
-      },
-    ]);
+    },
+  ]);
 
-    res.status(200).json({
-      status: "success",
-      students,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      status: "error",
-      message: "Server error",
-    });
-  }
-}
+  res.status(200).json({
+    status: "success",
+    data: students,
+  });
+});

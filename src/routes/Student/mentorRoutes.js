@@ -25,14 +25,12 @@ router.post("/", async (req, res, next) => {
 
     // Create new mentorship with mentor and mentee IDs and current date as start date
     const mentorship = new Mentorship({
-      mentor: mentorId,
-      mentee: menteeId,
+      mentorId,
+      menteeId,
       startDate,
     });
-
     // Save mentorship to database
     await mentorship.save();
-
     // Return success response
     return res.status(201).json({ message: "Mentorship created successfully" });
   } catch (error) {

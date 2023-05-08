@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
 const mentorshipSchema = new Schema({
-  mentor: {
+  mentorId: {
     type: Schema.Types.ObjectId,
     ref: "Users",
     required: true,
   },
-  mentee: {
+  menteeId: {
     type: Schema.Types.ObjectId,
     ref: "Users",
     required: true,
@@ -24,11 +24,11 @@ const mentorshipSchema = new Schema({
 
 // Add a validation to limit the number of students per mentor
 mentorshipSchema.statics.countMentorships = async function (mentorId) {
-  const count = await this.countDocuments({ mentor: mentorId });
+  const count = await this.countDocuments({ mentorId });
   return count;
 };
 
-mentorshipSchema.path("mentor").validate(async function (value) {
+mentorshipSchema.path("mentorId").validate(async function (value) {
   const maxStudentsPerMentor = 16;
   const count = await this.model("Mentorship").countMentorships(value);
   return count < maxStudentsPerMentor;
