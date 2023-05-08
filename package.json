@@ -10,6 +10,7 @@
     "start:ts": "tsc -w",
     "dev": "NODE_ENV=development nodemon src/server.js",
     "start:prod": "NODE_ENV=production node src/server.js",
+    "start-all": "concurrently \"cd ../cmrit-mentoring-tool-frontend && yarn run dev\" \"yarn run dev\" \"cd ../cmrit-mentoring-python-api && uvicorn main:app --port 8080 --reload\"",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

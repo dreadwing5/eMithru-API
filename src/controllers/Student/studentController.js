@@ -7,7 +7,7 @@ import User from "../../models/User.js";
 export const createStudentProfile = catchAsync(async (req, res, next) => {
   // create a new student personal data document
   const {
-    user,
+    userId,
     fullName,
     department,
     nameOnMarksheet,
@@ -35,7 +35,7 @@ export const createStudentProfile = catchAsync(async (req, res, next) => {
   } = req.body;
 
   const studentProfile = new StudentProfile({
-    user,
+    userId,
     fullName,
     department,
     nameOnMarksheet,
@@ -80,7 +80,7 @@ export const createStudentProfile = catchAsync(async (req, res, next) => {
 export const getStudentProfileById = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
-  const studentProfile = await StudentProfile.findById(id);
+  const studentProfile = await StudentProfile.findOne({ userId: id });
 
   if (!studentProfile) {
     return next(new AppError("Student profile not found", 404));

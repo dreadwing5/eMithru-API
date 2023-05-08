@@ -7,7 +7,8 @@ const ThreadSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    default: "",
+    default:
+      "There is currently not enough information to generate a summary for this thread.",
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,

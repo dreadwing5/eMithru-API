@@ -8,7 +8,7 @@ const studentProfileSchema = new Schema({
     middleName: String,
     lastName: { type: String, required: true },
   },
-  user: {
+  userId: {
     type: Schema.Types.ObjectId,
     ref: "Users",
     required: true,

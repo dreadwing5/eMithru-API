@@ -16,8 +16,8 @@ class ThreadService {
     if (updatedThread) {
       //TODO : We want to limit the access to the api
 
-      // const summary = await generateSummary(updatedThread);
-      // updatedThread.description = summary;
+      const summary = await generateSummary(updatedThread);
+      updatedThread.description = summary;
       await updatedThread.save();
     }
 
