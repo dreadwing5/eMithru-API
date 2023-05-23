@@ -18,8 +18,6 @@ export const getAllConversations = catchAsync(async (req, res, next) => {
 });
 
 export const getAllConversationsOfUser = catchAsync(async (req, res, next) => {
-  //   const userId = req.user._id;
-
   const { id: userId } = req.params;
   const conversations = await PrivateConversation.find({
     participants: { $in: [userId] },

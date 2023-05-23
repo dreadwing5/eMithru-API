@@ -10,7 +10,7 @@ import globalErrorHandler from "./controllers/errorController.js";
 //routes
 
 import userRouter from "./routes/userRoutes.js";
-import conversationRouter from "./routes/conversationRoutes.js";
+// import conversationRouter from "./routes/conversationRoutes.js";
 import meetingRouter from "./routes/meetingRoutes.js";
 import studentRouter from "./routes/Student/studentRoutes.js";
 import attendanceRouter from "./routes/attendanceRoutes.js";
@@ -60,7 +60,6 @@ app.use(mongoSanitize());
 
 app.use("/api/users", userRouter);
 app.use("/api/messages", messageRouter);
-app.use("/api/conversations", conversationRouter);
 app.use("/api/meetings", meetingRouter);
 app.use("/api/mentors", mentorRouter);
 app.use("/api/notifications", notificationRouter);
