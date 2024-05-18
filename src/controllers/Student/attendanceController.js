@@ -1,6 +1,7 @@
 import axios from "axios";
 import Attendance from "../../models/Student/Attendance.js";
 import ThreadService from "../../services/threadService.js";
+import logger from "../../utils/logger.js";
 
 const threadService = new ThreadService();
 
@@ -20,7 +21,10 @@ const sendAttendanceReport = async (attendanceData) => {
       throw new Error(`Error sending attendance report: ${response.data}`);
     }
   } catch (error) {
-    console.log(error);
+    logger.error("Error creating user", {
+      error: err.message,
+      stack: err.stack,
+    });
     throw new Error(`Error sending attendance report: ${error}`);
   }
 };
@@ -64,7 +68,7 @@ export const checkMinimumAttendance = async (attendanceData) => {
         "attendance"
       );
 
-      console.log("SENDING REPORT");
+      logger.info("SENDING REPORT");
     } catch (error) {
       console.error("Error in checkMinimumAttendance:", error);
       throw error;

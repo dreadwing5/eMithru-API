@@ -1,10 +1,10 @@
-import { Router } from "express"; 
+import { Router } from "express";
 import Message from "../models/Message";
+import logger from "../utils/logger.js";
 
-const router=Router();
+const router = Router();
 //new message
 router.post("/", async (req, res) => {
-  console.log("ji");
   const newMessage = {
     conversation: req.body.conversationId,
     from: req.body.senderId,
@@ -15,7 +15,10 @@ router.post("/", async (req, res) => {
     const savedMessage = await message.save();
     res.status(200).json(savedMessage);
   } catch (err) {
-    console.log(err);
+    logger.error("Error Fetching message", {
+      error: err.message,
+      stack: err.stack,
+    });
     res.status(500).json(err);
   }
 });

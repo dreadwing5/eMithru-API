@@ -56,7 +56,10 @@ export async function createUser(req, res, next) {
       },
     });
   } catch (err) {
-    console.log(err);
+    logger.error("Error creating user", {
+      error: err.message,
+      stack: err.stack,
+    });
     return next(new AppError(err, 500));
   }
 }
@@ -84,7 +87,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
 });
 
 export const deleteUser = catchAsync(async (req, res, next) => {
-  console.log(req.params);
+  logger.info("Deleting user", { userId: req.params.id });
   const { id: userId } = req.params;
   // perform the delete operation here, e.g.:
   const deletedUser = await User.findByIdAndDelete(userId);

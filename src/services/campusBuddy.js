@@ -61,7 +61,10 @@ class CampusBuddy {
       });
       return res;
     } catch (error) {
-      console.log(error);
+      logger.error("Error in chain call", {
+        error: err.message,
+        stack: err.stack,
+      });
       this.handleError(error);
       return null;
     }
