@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import { encrypt, compare } from "../utils/passwordHelper.js";
 
 const { model, Schema } = mongoose;
-// import validator from "validator";
 
 const userSchema = new Schema({
   name: {
@@ -21,10 +20,9 @@ const userSchema = new Schema({
   },
   avatar: String,
   role: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Role",
     required: true,
-    enum: ["student", "faculty", "hod", "admin"],
-    default: "admin",
   },
   lastActivity: {
     type: Date,
@@ -95,7 +93,11 @@ userSchema.methods.createPasswordResetToken = function () {
     .update(resetToken)
     .digest("hex");
 
-  console.log({ resetToken }, this.passwordResetToken);
+  logger.debug("Password reset token generated", {
+    resetToken,
+    passwordResetToken: this.passwordResetToken,
+  });
+
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //Expires in 10 minutes
 
   return resetToken;

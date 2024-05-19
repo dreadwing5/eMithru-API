@@ -12,8 +12,10 @@ import {
   forgotPassword,
   resetPassword,
   logout,
+  protect,
 } from "../controllers/authController.js";
 import { getAllThreadsOfUser } from "../controllers/threadController.js";
+import { authorizePermissions } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
@@ -23,11 +25,19 @@ router.post("/login", login);
 router.post("/forgotPassword", forgotPassword);
 router.patch("/resetPassword/:token", resetPassword);
 router.get("/logout", logout);
+router
+  .route("/")
+  .get(protect, authorizePermissions("read:users"), getAllUsers)
+  .post(protect, authorizePermissions("create:users"), createUser);
 
-router.route("/").get(getAllUsers).post(createUser);
+router
+  .route("/:id")
+  .get(protect, authorizePermissions("read:users"), getUser)
+  .patch(protect, authorizePermissions("update:users"), updateUser)
+  .delete(protect, authorizePermissions("delete:users"), deleteUser);
 
-router.route("/:id").get(getUser).patch(updateUser).delete(deleteUser);
-
-router.route("/:id/threads").get(getAllThreadsOfUser);
+router
+  .route("/:id/threads")
+  .get(protect, authorizePermissions("read:threads"), getAllThreadsOfUser);
 
 export default router;

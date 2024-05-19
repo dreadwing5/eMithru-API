@@ -1,12 +1,15 @@
 import "./config.js";
 import connectDB from "./utils/db.js";
 import app from "./index.js";
+import logger from "./utils/logger.js";
 import SocketManager from "./utils/socketManager.js";
 import socketController from "./controllers/socketController.js";
 
 process.on("uncaughtException", (err) => {
-  console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
-  console.log(err);
+  logger.error("UNCAUGHT EXCEPTION! 💥 Shutting down...", {
+    error: err.message,
+    stack: err.stack,
+  });
   process.exit(1);
 });
 
@@ -15,8 +18,10 @@ connectDB();
 const port = process.env.PORT || 8000;
 
 const server = app.listen(port, () => {
-  console.log(`${process.env.NODE_ENV} Build 🔥`);
-  console.log(`App running on port ${port}...`);
+  logger.info(`${process.env.NODE_ENV} Build 🔥`, {
+    environment: process.env.NODE_ENV,
+  });
+  logger.info(`App running on port ${port}...`, { port });
 });
 
 const io = SocketManager.createServer(server, {
@@ -31,8 +36,10 @@ io.on("connection", (socket) => {
 });
 
 process.on("unhandledRejection", (err) => {
-  console.log(err.name, err.message);
-  console.log("UNHANDLED REJECTION! 💥 Shutting down...");
+  logger.error("UNHANDLED REJECTION! 💥 Shutting down...", {
+    error: err.name,
+    message: err.message,
+  });
   server.close(() => {
     process.exit(1);
   });

@@ -22,6 +22,9 @@ const handleJWTError = () =>
 
 const handleJWTExpiredError = () =>
   new AppError("Your token has expired!, Please log in again.", 401);
+const handleUnauthorizedError = () =>
+  new AppError("Unauthorized access. Insufficient permissions.", 403);
+
 const sendErrorDev = (err, res) => {
   logger.error(`ERROR 💥  ${err}`);
   res.status(err.statusCode).json({
@@ -69,6 +72,7 @@ export default (err, req, res, next) => {
     if (err.name === "ValidationError") error = handleValidationErrorDB(error);
     if (err.name === "JsonWebTokenError") error = handleJWTError();
     if (err.name === "TokenExpiredError") error = handleJWTExpiredError();
+    if (err.name === "UnauthorizedError") error = handleUnauthorizedError();
 
     sendErrorProd(error, res);
   }
