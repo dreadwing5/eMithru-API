@@ -1,4 +1,3 @@
-// models/Role.js
 import mongoose from "mongoose";
 
 const roleSchema = new mongoose.Schema({
@@ -12,7 +11,11 @@ const roleSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  permissions: [String],
+  permissions: [
+    {
+      type: String,
+    },
+  ],
 });
 
 const Role = mongoose.model("Role", roleSchema);

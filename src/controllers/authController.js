@@ -4,6 +4,7 @@ import User from "../models/User.js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/appError.js";
 import sendEmail from "../utils/email.js";
+import Role from "../models/Role.js";
 
 const verfiyAsync = promisify(jwt.verify);
 const signToken = (id) =>
@@ -21,18 +22,31 @@ const cookieOptions = {
 if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
 export const signup = catchAsync(async (req, res, next) => {
+  const { name, email, password, passwordConfirm, role: roleName } = req.body;
+
+  let role;
+  if (roleName) {
+    // Find the role document based on the provided role name
+    role = await Role.findOne({ name: roleName });
+
+    if (!role) {
+      return next(new AppError("Invalid role", 400));
+    }
+  }
+
   const newUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
+    name,
+    email,
+    password,
+    passwordConfirm,
+    role: role ? role._id : undefined, // Assign the role _id if available, otherwise set it as undefined
   });
 
   const token = signToken(newUser._id);
 
   res.cookie("jwt", token, cookieOptions);
 
-  //Remove the password from the response
+  // Remove the password from the response
   newUser.password = undefined;
 
   res.status(201).json({
