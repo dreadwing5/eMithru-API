@@ -1,11 +1,25 @@
 import User from "../models/User.js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/appError.js";
+import Role from "../models/Role.js";
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
-  const filter = req.query.role ? { role: req.query.role } : {};
-  const users = await User.find(filter);
+  const { role } = req.query;
+  const filter = role ? { role: role } : {};
 
+  // Find the role document by name
+  const roleDoc = await Role.findOne({ name: role });
+
+  if (role && !roleDoc) {
+    return next(new AppError("Invalid role", 400));
+  }
+
+  // Update the filter to use the role ID
+  if (roleDoc) {
+    filter.role = roleDoc._id;
+  }
+
+  const users = await User.find(filter).populate("role");
   // Check if users array is empty
   if (users.length === 0) {
     res.status(200).json({

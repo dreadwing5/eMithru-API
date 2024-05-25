@@ -22,7 +22,6 @@ const userSchema = new Schema({
   role: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Role",
-    required: true,
   },
   lastActivity: {
     type: Date,
