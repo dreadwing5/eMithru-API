@@ -38,7 +38,8 @@ router.get("/:id", getAcademic, (req, res) => {
 
 // Create one Academic
 router.post("/", async (req, res) => {
-	const academic = new Academics({
+	console.log("first");
+	const academicData = {
 		sslc: {
 			school: req.body.sslc.school,
 			percentage: req.body.sslc.percentage,
@@ -53,17 +54,23 @@ router.post("/", async (req, res) => {
 			collegeAddress: req.body.puc.address,
 			board: req.body.puc.board,
 		},
-		localEntry: {
+	};
+
+	if (req.body.diploma) {
+		academicData.localEntry = {
 			college: req.body.diploma.college,
 			percentage: req.body.diploma.percentage,
 			yearOfPassing: req.body.diploma.year,
 			collegeAddress: req.body.diploma.address,
 			board: req.body.diploma.board,
-		},
-	});
+		};
+	}
 
+	const academic = new Academics(academicData);
+	console.log(academic);
 	try {
 		const validationCheck = AcademicSchema.safeParse(req.body);
+		console.log(validationCheck);
 		const newAcademic = await academic.save();
 		res.status(201).json(newAcademic);
 	} catch (err) {
