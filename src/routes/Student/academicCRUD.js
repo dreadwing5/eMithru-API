@@ -38,20 +38,19 @@ router.get("/:id", getAcademic, (req, res) => {
 
 // Create one Academic
 router.post("/", async (req, res) => {
-	console.log("first");
 	const academicData = {
 		sslc: {
 			school: req.body.sslc.school,
 			percentage: req.body.sslc.percentage,
-			yearOfPassing: req.body.sslc.year,
-			schoolAddress: req.body.sslc.address,
+			yearOfPassing: req.body.sslc.yearOfPassing,
+			schoolAddress: req.body.sslc.schoolAddress,
 			board: req.body.sslc.board,
 		},
 		puc: {
 			college: req.body.puc.college,
 			percentage: req.body.puc.percentage,
-			yearOfPassing: req.body.puc.year,
-			collegeAddress: req.body.puc.address,
+			yearOfPassing: req.body.puc.yearOfPassing,
+			collegeAddress: req.body.puc.collegeAddress,
 			board: req.body.puc.board,
 		},
 	};
@@ -67,10 +66,8 @@ router.post("/", async (req, res) => {
 	}
 
 	const academic = new Academics(academicData);
-	console.log(academic);
 	try {
-		const validationCheck = AcademicSchema.safeParse(req.body);
-		console.log(validationCheck);
+		// const validationCheck = AcademicSchema.safeParse(req.body);
 		const newAcademic = await academic.save();
 		res.status(201).json(newAcademic);
 	} catch (err) {

@@ -1,15 +1,16 @@
 import { Router } from "express";
 const router = Router();
-import Admission, {
-	find,
-	findById,
-	findByIdAndUpdate,
-	findByIdAndDelete,
-} from "../models/Admissions";
+// import {
+// 	find,
+// 	findById,
+// 	findByIdAndUpdate,
+// 	findByIdAndDelete,
+// } from "../../models/Student/Admissions";
+import Admission from "../../models/Student/Admissions.js";
 import AdmissionSchema from "../../zod/AdmissionValidator.js";
 
 // Create Admission
-router.post("/admissions", async (req, res) => {
+router.post("/", async (req, res) => {
 	try {
 		const validationCheck = AdmissionSchema.safeParse(req.body);
 		const admission = new Admission(req.body);
@@ -21,9 +22,9 @@ router.post("/admissions", async (req, res) => {
 });
 
 // Read All Admissions
-router.get("/admissions", async (req, res) => {
+router.get("/", async (req, res) => {
 	try {
-		const admissions = await find();
+		const admissions = await Admission.find();
 		res.json(admissions);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
@@ -31,9 +32,9 @@ router.get("/admissions", async (req, res) => {
 });
 
 // Read Admission by ID
-router.get("/admissions/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
 	try {
-		const admission = await findById(req.params.id);
+		const admission = await Admission.findById(req.params.id);
 		if (!admission) {
 			return res.status(404).json({ error: "Admission not found" });
 		}
@@ -44,7 +45,7 @@ router.get("/admissions/:id", async (req, res) => {
 });
 
 // Update Admission by ID
-router.patch("/admissions/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
 	try {
 		const validationCheck = AdmissionSchema.safeParse(req.body);
 		const admission = await findByIdAndUpdate(req.params.id, req.body, {
@@ -60,9 +61,9 @@ router.patch("/admissions/:id", async (req, res) => {
 });
 
 // Delete Admission by ID
-router.delete("/admissions/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
 	try {
-		const admission = await findByIdAndDelete(req.params.id);
+		const admission = await Admission.findByIdAndDelete(req.params.id);
 		if (!admission) {
 			return res.status(404).json({ error: "Admission not found" });
 		}

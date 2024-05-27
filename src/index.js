@@ -8,7 +8,7 @@ import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/errorController.js";
 
 //routes
-
+import admissionRouter from "./routes/Student/AdmissionRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 // import conversationRouter from "./routes/conversationRoutes.js";
 import meetingRouter from "./routes/meetingRoutes.js";
@@ -69,10 +69,12 @@ app.use("/api/threads", threadRouter);
 app.use("/api/students", studentRouter);
 app.use("/api/students/attendance", attendanceRouter);
 app.use("/api/students/academic", academicRouter);
-
+app.use("/api/students/academic", academicRouter);
+app.use("/api/students/admissions", admissionRouter);
 // sendAttendanceNotifications();
 /* app.use("/api/academic", academicRouter);
-app.use("/api/admission", admissionRouter); */
+
+*/
 
 //Handle non-existing routes
 app.all("*", (req, res, next) => {
