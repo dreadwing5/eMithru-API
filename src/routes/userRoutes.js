@@ -27,17 +27,19 @@ router.patch("/resetPassword/:token", resetPassword);
 router.get("/logout", logout);
 router
   .route("/")
-  .get(protect, authorizePermissions("read:users"), getAllUsers)
+  .get(getAllUsers)
   .post(protect, authorizePermissions("create:users"), createUser);
 
 router
   .route("/:id")
-  .get(protect, authorizePermissions("read:users"), getUser)
+  .get(getUser)
   .patch(protect, authorizePermissions("update:users"), updateUser)
   .delete(protect, authorizePermissions("delete:users"), deleteUser);
 
-router
-  .route("/:id/threads")
-  .get(protect, authorizePermissions("read:threads"), getAllThreadsOfUser);
+// router
+//   .route("/:id/threads")
+//   .get(protect, authorizePermissions("read:threads"), getAllThreadsOfUser);
+
+router.route("/:id/threads").get(getAllThreadsOfUser);
 
 export default router;

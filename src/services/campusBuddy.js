@@ -1,15 +1,11 @@
 /* eslint-disable node/file-extension-in-import */
-import { JSONLoader } from "langchain/document_loaders/fs/json";
-import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
-import { RetrievalQAChain, loadQARefineChain } from "langchain/chains";
-import { OpenAI } from "langchain/llms/openai";
+import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
+import { OpenAIEmbeddings } from "@langchain/openai";
 import { createClient } from "@supabase/supabase-js";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import logger from "../utils/logger.js";
 
 class CampusBuddy {
   constructor() {
-    this.model = new OpenAI({ openAIApiKey: process.env.OPEN_API_KEY });
     this.client = createClient(
       process.env.SUPABASE_URL,
       process.env.SUPABASE_PRIVATE_KEY
@@ -21,23 +17,8 @@ class CampusBuddy {
 
   handleError(error) {
     // Log the error using your logger
-    logger.error(`ERROR 💥  ${error}`);
-
+    logger.error(`ERROR 💥 ${error}`);
     // You can further customize this method to handle different types of errors as needed
-  }
-
-  async buildIndex(filePath) {
-    try {
-      const loader = new JSONLoader(filePath);
-      const docs = await loader.load();
-      await SupabaseVectorStore.fromDocuments(docs, this.embeddings, {
-        client: this.client,
-        tableName: "documents",
-        queryName: "match_documents",
-      });
-    } catch (error) {
-      this.handleError(error);
-    }
   }
 
   async generateResponse(query) {
@@ -51,19 +32,22 @@ class CampusBuddy {
         }
       );
 
-      const chain = new RetrievalQAChain({
-        combineDocumentsChain: loadQARefineChain(this.model),
-        retriever: vectorStore.asRetriever(),
+      // Perform similarity search using the vector store
+      const resultA = await vectorStore.similaritySearch(query, 5);
+
+      // Perform maximum marginal relevance search using the vector store
+      const resultB = await vectorStore.maxMarginalRelevanceSearch(query, {
+        k: 5,
       });
 
-      const res = await chain.call({
-        query,
-      });
-      return res;
+      // Combine the results
+      const combinedResults = [...resultA, ...resultB];
+
+      return combinedResults;
     } catch (error) {
-      logger.error("Error in chain call", {
-        error: err.message,
-        stack: err.stack,
+      logger.error("Error in vector store search", {
+        error: error.message,
+        stack: error.stack,
       });
       this.handleError(error);
       return null;

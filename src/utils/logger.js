@@ -38,17 +38,17 @@ class Logger {
       ],
     });
 
-    // if (process.env.NODE_ENV !== "production") {
-    //   this.logger.add(
-    //     new _transports.Console({
-    //       format: _format.combine(
-    //         _format.colorize(),
-    //         _format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-    //         logFormat
-    //       ),
-    //     })
-    //   );
-    // }
+    if (process.env.NODE_ENV !== "production") {
+      this.logger.add(
+        new _transports.Console({
+          format: _format.combine(
+            _format.colorize(),
+
+            logFormat
+          ),
+        })
+      );
+    }
   }
 
   //Log Message Levels

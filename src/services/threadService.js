@@ -38,6 +38,21 @@ class ThreadService {
 
     return newThread;
   }
+
+  async openThread(threadId) {
+    const updatedThread = await Thread.findByIdAndUpdate(
+      threadId,
+      { status: "open", closedAt: null },
+      { new: true }
+    )
+      .populate({
+        path: "participants",
+        select: "name avatar role",
+      })
+      .populate("messages");
+
+    return updatedThread;
+  }
 }
 
 export default ThreadService;
