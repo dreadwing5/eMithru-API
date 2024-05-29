@@ -4,6 +4,8 @@
   "engines": {
     "node": ">=10.0.0"
   },
+  "target": "ES2020",
+  "module": "nodenext",
   "type": "module",
   "description": "A mentor platform for students",
   "scripts": {
@@ -25,8 +27,9 @@
   },
   "homepage": "https://github.com/dreadwing5/Tourify#readme",
   "dependencies": {
-    "@langchain/community": "^0.2.3",
-    "@langchain/openai": "^0.0.33",
+    "@langchain/community": "^0.2.4",
+    "@langchain/core": "^0.2.2",
+    "@langchain/openai": "^0.0.34",
     "@supabase/supabase-js": "^2.21.0",
     "axios": "^1.7.2",
     "cors": "^2.8.5",
@@ -37,6 +40,7 @@
     "fs": "^0.0.1-security",
     "helmet": "^5.0.1",
     "jsonwebtoken": "^9.0.0",
+    "langchain": "^0.2.3",
     "mongoose": "^7.1.0",
     "morgan": "^1.10.0",
     "node-cron": "^3.0.2",

@@ -1,11 +1,22 @@
 /* eslint-disable node/file-extension-in-import */
+import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
+import { JSONLoader } from "langchain/document_loaders/fs/json";
 import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
-import { OpenAIEmbeddings } from "@langchain/openai";
+import { createRetrievalChain } from "langchain/chains/retrieval";
 import { createClient } from "@supabase/supabase-js";
+import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+import { pull } from "langchain/hub";
 import logger from "../utils/logger.js";
 
 class CampusBuddy {
   constructor() {
+    this.model = new ChatOpenAI({
+      model: "gpt-3.5-turbo-1106",
+      temperature: 0.9,
+      openAIApiKey: process.env.OPEN_API_KEY,
+    });
     this.client = createClient(
       process.env.SUPABASE_URL,
       process.env.SUPABASE_PRIVATE_KEY
@@ -18,11 +29,27 @@ class CampusBuddy {
   handleError(error) {
     // Log the error using your logger
     logger.error(`ERROR 💥 ${error}`);
-    // You can further customize this method to handle different types of errors as needed
+    // Throw the error to propagate it to the calling code
+    throw error;
+  }
+
+  async buildIndex(filePath) {
+    try {
+      const loader = new JSONLoader(filePath);
+      const docs = await loader.load();
+      await SupabaseVectorStore.fromDocuments(docs, this.embeddings, {
+        client: this.client,
+        tableName: "documents",
+        queryName: "match_documents",
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 
   async generateResponse(query) {
     try {
+      logger.info("Step 1: Create vector store from existing index");
       const vectorStore = await SupabaseVectorStore.fromExistingIndex(
         this.embeddings,
         {
@@ -32,25 +59,44 @@ class CampusBuddy {
         }
       );
 
-      // Perform similarity search using the vector store
-      const resultA = await vectorStore.similaritySearch(query, 5);
+      logger.info("Step 2: Create retriever from vector store");
+      const retriever = vectorStore.asRetriever();
 
-      // Perform maximum marginal relevance search using the vector store
-      const resultB = await vectorStore.maxMarginalRelevanceSearch(query, {
-        k: 5,
+      logger.info("Step 3: Create question answering prompt");
+      const questionAnsweringPrompt = ChatPromptTemplate.fromMessages([
+        [
+          "system",
+          "Answer the user's questions based on the below context:\n\n{context}",
+        ],
+        ["human", "{input}"],
+      ]);
+
+      logger.info(
+        "Step 4: Create the combineDocsChain using createStuffDocumentsChain"
+      );
+      const combineDocsChain = await createStuffDocumentsChain({
+        llm: this.model,
+        prompt: questionAnsweringPrompt,
+        outputParser: new StringOutputParser(),
       });
 
-      // Combine the results
-      const combinedResults = [...resultA, ...resultB];
+      logger.info("Step 5: Create the retrieval chain");
+      const chain = await createRetrievalChain({
+        retriever,
+        combineDocsChain,
+      });
 
-      return combinedResults;
+      logger.info("Step 6: Invoke the chain with the query");
+      const chainRes = await chain.invoke({ input: query });
+
+      return chainRes.answer;
     } catch (error) {
-      logger.error("Error in vector store search", {
+      logger.error("Error in chain call", {
         error: error.message,
         stack: error.stack,
       });
-      this.handleError(error);
-      return null;
+      // Throw the error to propagate it to the calling code
+      throw error;
     }
   }
 }

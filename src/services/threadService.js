@@ -3,6 +3,7 @@ import { generateSummary } from "./summaryService.js";
 
 class ThreadService {
   async closeThread(threadId) {
+    console.log(threadId);
     const updatedThread = await Thread.findByIdAndUpdate(
       threadId,
       { status: "closed", closedAt: new Date() },
@@ -17,6 +18,7 @@ class ThreadService {
       //TODO : We want to limit the access to the api
 
       const summary = await generateSummary(updatedThread);
+
       updatedThread.description = summary;
       await updatedThread.save();
     }
