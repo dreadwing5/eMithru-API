@@ -26,6 +26,24 @@ export const closeThread = catchAsync(async (req, res, next) => {
   }
 });
 
+export const openThread = catchAsync(async (req, res, next) => {
+  const { threadId } = req.params;
+  try {
+    const updatedThread = await threadService.openThread(threadId);
+    if (!updatedThread) {
+      return next(new AppError("Thread not found", 404));
+    }
+    res.status(200).json({
+      status: "success",
+      data: {
+        thread: updatedThread,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export const createNewThread = catchAsync(async (req, res, next) => {
   const { author, participants, title, topic } = req.body;
   const newThread = await threadService.createThread(

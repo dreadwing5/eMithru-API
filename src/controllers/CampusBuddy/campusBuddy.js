@@ -7,7 +7,7 @@ const handleUserQuery = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      output: response.output_text,
+      output: response,
     },
   });
 });

@@ -11,15 +11,18 @@ router.post("/", async (req, res, next) => {
     // Get mentor and mentee IDs from request body
     const { mentorId, menteeId, startDate } = req.body;
 
-    // Find mentor and mentee by their IDs
-    const mentor = await User.findById(mentorId);
-    const mentee = await User.findById(menteeId);
+    // Find mentor and mentee by their IDs, and populate the 'role' field
+    const mentor = await User.findById(mentorId).populate("role");
+    const mentee = await User.findById(menteeId).populate("role");
 
-    // Check if mentor and mentee exist and are of the correct role
-    if (!mentor || mentor.role !== "faculty") {
+    console.log(mentee, mentor);
+
+    // Check if mentor and mentee exist and have the correct role
+    if (!mentor || !mentor.role || mentor.role.name !== "faculty") {
       return res.status(400).json({ message: "Invalid mentor ID" });
     }
-    if (!mentee || mentee.role !== "student") {
+
+    if (!mentee || !mentee.role || mentee.role.name !== "student") {
       return res.status(400).json({ message: "Invalid mentee ID" });
     }
 
@@ -45,13 +48,13 @@ router.get("/:menteeId", async (req, res, next) => {
   try {
     const { menteeId } = req.params;
 
-    const mentorship = await Mentorship.findOne({ mentee: menteeId });
+    const mentorship = await Mentorship.findOne({ menteeId });
 
     if (!mentorship) {
       return res.status(404).json({ message: "Mentorship not found" });
     }
 
-    const mentor = await User.findById(mentorship.mentor);
+    const mentor = await User.findById(mentorship.mentorId);
 
     if (!mentor) {
       return res.status(404).json({ message: "Mentor not found" });
@@ -89,6 +92,21 @@ router.get("/:mentorId/mentees", async (req, res, next) => {
 
     // Return success response with mentees data
     return res.status(200).json({ mentees });
+  } catch (error) {
+    // Handle errors
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+// API route for finding all mentorships
+router.get("/", async (req, res, next) => {
+  try {
+    // Find all mentorships in the database
+    const mentorships = await Mentorship.find();
+
+    // Return success response with mentorships data
+    return res.status(200).json({ mentorships });
   } catch (error) {
     // Handle errors
     console.error(error);
