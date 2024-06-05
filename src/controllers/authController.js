@@ -22,24 +22,25 @@ const cookieOptions = {
 if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
 export const signup = catchAsync(async (req, res, next) => {
-  const { name, email, password, passwordConfirm, role: roleName } = req.body;
+  const { name, email, phone, avatar, role, password, passwordConfirm } =
+    req.body;
 
-  let role;
-  if (roleName) {
-    // Find the role document based on the provided role name
-    role = await Role.findOne({ name: roleName });
+  // Find the role document based on the provided role name
+  const roleDoc = await Role.findOne({ name: role });
 
-    if (!role) {
-      return next(new AppError("Invalid role", 400));
-    }
+  if (!roleDoc) {
+    return next(new AppError("Invalid role", 400));
   }
 
   const newUser = await User.create({
     name,
     email,
+    phone,
+    avatar,
+    role: roleDoc._id,
+    roleName: roleDoc.name,
     password,
     passwordConfirm,
-    role: role ? role._id : undefined, // Assign the role _id if available, otherwise set it as undefined
   });
 
   const token = signToken(newUser._id);

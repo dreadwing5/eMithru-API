@@ -22,6 +22,11 @@ const userSchema = new Schema({
   role: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Role",
+    required: [true, "Please assign a role to the user"],
+  },
+  roleName: {
+    type: String,
+    required: true,
   },
   lastActivity: {
     type: Date,
