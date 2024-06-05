@@ -14,9 +14,7 @@ const morganMiddleware = morgan(
   ":method :url :status :response-time ms - :res[content-length]",
   {
     stream: accessLogStream,
-    skip: (req, res) => {
-      return res.statusCode < 400; // Skip logging for successful requests
-    },
+    skip: (req, res) => res.statusCode < 400, // Skip logging for successful requests
   }
 );
 
