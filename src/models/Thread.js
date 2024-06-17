@@ -1,49 +1,75 @@
-import mongoose from "mongoose";
+import { createClient } from "@supabase/supabase-js";
 
-const ThreadSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    default:
-      "There is currently not enough information to generate a summary for this thread.",
-  },
-  author: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Users",
-  },
-  participants: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Users",
-    },
-  ],
-  status: {
-    type: String,
-    enum: ["open", "closed"],
-    default: "open",
-  },
-  topic: {
-    type: String,
-    enum: ["general", "attendance", "performance", "well-being"],
-    required: true,
-  },
-  messages: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Messages",
-    },
-  ],
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    required: true,
-  },
-  closedAt: {
-    type: Date,
-  },
-});
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_PRIVATE_KEY
+);
 
-export default mongoose.model("Thread", ThreadSchema);
+const Thread = {
+  async find() {
+    const { data, error } = await supabase.from("threads").select("*");
+
+    if (error) {
+      throw new Error(`Error retrieving threads: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  async findById(id) {
+    const { data, error } = await supabase
+      .from("threads")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw new Error(`Error retrieving thread: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  async create(threadData) {
+    const { data, error } = await supabase
+      .from("threads")
+      .insert(threadData)
+      .single();
+
+    if (error) {
+      throw new Error(`Error creating thread: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  async update(id, updateData) {
+    const { data, error } = await supabase
+      .from("threads")
+      .update(updateData)
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw new Error(`Error updating thread: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  async delete(id) {
+    const { data, error } = await supabase
+      .from("threads")
+      .delete()
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw new Error(`Error deleting thread: ${error.message}`);
+    }
+
+    return data;
+  },
+};
+
+export default Thread;

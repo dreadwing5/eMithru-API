@@ -3,6 +3,12 @@ import StudentProfile from "../../models/Student/Profile.js";
 import catchAsync from "../../utils/catchAsync.js";
 import AppError from "../../utils/appError.js";
 import User from "../../models/User.js";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_PRIVATE_KEY
+);
 
 export const createStudentProfile = catchAsync(async (req, res, next) => {
   // create a new student personal data document
@@ -95,57 +101,48 @@ export const getStudentProfileById = catchAsync(async (req, res, next) => {
 });
 
 export const getAllStudents = catchAsync(async (req, res, next) => {
-  const students = await User.aggregate([
-    {
-      $match: {
-        role: "student",
-      },
-    },
-    {
-      $lookup: {
-        from: "mentorships",
-        localField: "_id",
-        foreignField: "menteeId",
-        as: "mentorship",
-      },
-    },
-    {
-      $unwind: {
-        path: "$mentorship",
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "mentorship.mentorId",
-        foreignField: "_id",
-        as: "mentorData",
-      },
-    },
-    {
-      $unwind: {
-        path: "$mentorData",
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $project: {
-        _id: 1,
-        name: 1,
-        role: 1,
-        mentor: {
-          mentorId: "$mentorData._id",
-          name: "$mentorData.name",
-          startDate: "$mentorship.startDate",
-          endDate: "$mentorship.endDate",
-        },
-      },
-    },
-  ]);
+  const { data: students, error } = await supabase
+    .from("users")
+    .select(
+      `
+      id,
+      name,
+      role,
+      mentorships(
+        mentor_id,
+        start_date,
+        end_date,
+        mentor:mentor_id(
+          id,
+          name
+        )
+      )
+    `
+    )
+    .eq("role", "student");
+
+  if (error) {
+    console.error("Error fetching students:", error);
+    return next(new AppError("Failed to fetch students", 500));
+  }
+
+  const formattedStudents = students.map((student) => ({
+    id: student.id,
+    name: student.name,
+    role: student.role,
+    mentor:
+      student.mentorships.length > 0
+        ? {
+            mentorId: student.mentorships[0].mentor_id,
+            name: student.mentorships[0].mentor.name,
+            startDate: student.mentorships[0].start_date,
+            endDate: student.mentorships[0].end_date,
+          }
+        : null,
+  }));
 
   res.status(200).json({
     status: "success",
-    data: students,
+    data: formattedStudents,
   });
 });

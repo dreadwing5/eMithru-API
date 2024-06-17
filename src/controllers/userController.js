@@ -1,95 +1,116 @@
-import User from "../models/User.js";
+import { createClient } from "@supabase/supabase-js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/appError.js";
-import Role from "../models/Role.js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_PRIVATE_KEY
+);
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
   const { role } = req.query;
-  const filter = role ? { role: role } : {};
 
-  // Find the role document by name
-  const roleDoc = await Role.findOne({ name: role });
+  let query = supabase.from("users").select("*");
 
-  if (role && !roleDoc) {
-    return next(new AppError("Invalid role", 400));
+  if (role) {
+    query = query.eq("role", role);
   }
 
-  // Update the filter to use the role ID
-  if (roleDoc) {
-    filter.role = roleDoc._id;
+  const { data: users, error } = await query;
+
+  if (error) {
+    return next(new AppError(error.message, 500));
   }
 
-  const users = await User.find(filter).populate("role");
-  // Check if users array is empty
-  if (users.length === 0) {
-    res.status(200).json({
-      status: "success",
-      results: 0,
-      data: {
-        users: [],
-      },
-    });
-  } else {
-    // Send response with user array
-    res.status(200).json({
-      status: "success",
-      results: users.length,
-      data: {
-        users,
-      },
-    });
-  }
+  res.status(200).json({
+    status: "success",
+    results: users.length,
+    data: {
+      users,
+    },
+  });
 });
 
-export function getUser(req, res) {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!!",
-  });
-}
+export const getUser = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
 
-export async function createUser(req, res, next) {
-  const { name, email, phone, avatar, role, password, passwordConfirm } =
-    req.body;
-  try {
-    const newUser = await User.create({
-      name,
-      email,
-      phone,
-      avatar,
-      role,
-      password,
-      passwordConfirm,
-    });
+  const { data: user, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", id)
+    .single();
 
-    newUser.password = undefined;
-    res.status(201).json({
-      status: "success",
-      data: {
-        user: newUser,
-      },
-    });
-  } catch (err) {
-    logger.error("Error creating user", {
-      error: err.message,
-      stack: err.stack,
-    });
-    return next(new AppError(err, 500));
+  if (error) {
+    return next(new AppError(error.message, 404));
   }
-}
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      user,
+    },
+  });
+});
+
+export const createUser = catchAsync(async (req, res, next) => {
+  const { name, email, phone, avatar, role, password } = req.body;
+
+  const { user, error: signUpError } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+
+  if (signUpError) {
+    return next(new AppError(signUpError.message, 400));
+  }
+
+  // Hash the password
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+  const { data: newUser, error: insertError } = await supabase
+    .from("users")
+    .insert([
+      {
+        id: user.id,
+        name,
+        email,
+        phone,
+        avatar,
+        role,
+        status: "active",
+        password: hashedPassword,
+      },
+    ])
+    .single();
+
+  if (insertError) {
+    return next(new AppError(insertError.message, 500));
+  }
+
+  // Remove the password from the response
+  delete newUser.password;
+
+  res.status(201).json({
+    status: "success",
+    data: {
+      user: newUser,
+    },
+  });
+});
 
 export const updateUser = catchAsync(async (req, res, next) => {
-  const { id: userId } = req.params;
+  const { id } = req.params;
+  const { name, email, phone, avatar, role } = req.body;
 
-  // Update the user and return the new document
-  const updatedUser = await User.findByIdAndUpdate(userId, req.body, {
-    runValidators: true,
-    new: true,
-    context: "query",
-  });
+  const { data: updatedUser, error } = await supabase
+    .from("users")
+    .update({ name, email, phone, avatar, role })
+    .eq("id", id)
+    .single();
 
-  if (!updatedUser) {
-    return next(new AppError("User not found", 404));
+  if (error) {
+    return next(new AppError(error.message, 404));
   }
 
   res.status(200).json({
@@ -101,14 +122,16 @@ export const updateUser = catchAsync(async (req, res, next) => {
 });
 
 export const deleteUser = catchAsync(async (req, res, next) => {
-  logger.info("Deleting user", { userId: req.params.id });
-  const { id: userId } = req.params;
-  // perform the delete operation here, e.g.:
-  const deletedUser = await User.findByIdAndDelete(userId);
+  const { id } = req.params;
 
-  if (!deletedUser) {
-    return next(new AppError("User not found", 404));
+  const { error: deleteError } = await supabase
+    .from("users")
+    .delete()
+    .eq("id", id);
+
+  if (deleteError) {
+    return next(new AppError(deleteError.message, 500));
   }
 
-  res.status(204).json(); // return a success response with no content
+  res.status(204).json();
 });

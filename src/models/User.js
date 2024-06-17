@@ -1,111 +1,148 @@
-import { randomBytes, createHash } from "crypto";
-import mongoose from "mongoose";
-import { encrypt, compare } from "../utils/passwordHelper.js";
+// models/User.js
+import { createClient } from "@supabase/supabase-js";
 
-const { model, Schema } = mongoose;
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_PRIVATE_KEY
+);
 
-const userSchema = new Schema({
-  name: {
-    type: String,
-    required: [true, "Please tell us your name!"],
-  },
-  email: {
-    type: String,
-    required: [true, "Please provide your email"],
-    unique: true,
-    lowercase: true,
-  },
-  phone: {
-    type: String,
-  },
-  avatar: String,
-  role: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Role",
-    required: [true, "Please assign a role to the user"],
-  },
-  roleName: {
-    type: String,
-    required: true,
-  },
-  lastActivity: {
-    type: Date,
-  },
-  status: {
-    type: String,
-    enum: ["active", "inactive", "suspended"],
-    default: "active",
-  },
-  password: {
-    type: String,
-    required: [true, "Please provide a password"],
-    minlength: 8,
-    select: false,
-  },
-  passwordConfirm: {
-    type: String,
-    required: [true, "Please confirm your password"],
-    validate: {
-      //This only works on CREATE and SAVE!!!
-      validator: function (el) {
-        return el === this.password;
-      },
-      message: "Password do not match!",
-    },
-  },
-  passwordChangedAt: Date,
-  passwordResetToken: String,
-  passwordResetExpires: Date,
-});
+class User {
+  static async create(userData) {
+    const { password, ...rest } = userData;
 
-userSchema.pre("save", async function (next) {
-  //Only run this function if password was actually modified
-  if (!this.isModified("password")) return next();
-  //Hash the password
+    // Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  this.password = await encrypt(this.password);
+    const { data: user, error } = await supabase
+      .from("users")
+      .insert([{ ...rest, password: hashedPassword, status: "active" }])
+      .single();
 
-  //Delete passwordConfirm field
-  this.passwordConfirm = undefined; //This is to prevent saving the passwordConfirm to the database
-  next();
-});
+    if (error) {
+      throw new Error(`Error creating user: ${error.message}`);
+    }
 
-userSchema.methods.checkPassword = async function (
-  candidatePassword,
-  userPassword
-) {
-  return await compare(candidatePassword, userPassword);
-};
+    // Remove the password from the user object
+    delete user.password;
 
-userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
-  if (this.passwordChangedAt) {
-    const changedTimestamp = parseInt(
-      this.passwordChangedAt.getTime() / 1000,
-      10
-    );
-    return JWTTimestamp < changedTimestamp;
+    return user;
   }
 
-  //False means not changed
-  return false;
-};
+  static async findById(id) {
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-userSchema.methods.createPasswordResetToken = function () {
-  const resetToken = randomBytes(32).toString("hex");
+    if (error) {
+      throw new Error(`User not found with ID: ${id}`);
+    }
 
-  this.passwordResetToken = createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
+    // Remove the password from the user object
+    delete user.password;
 
-  logger.debug("Password reset token generated", {
-    resetToken,
-    passwordResetToken: this.passwordResetToken,
-  });
+    return user;
+  }
 
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //Expires in 10 minutes
+  static async findByEmail(email) {
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .single();
 
-  return resetToken;
-};
-const User = model("Users", userSchema);
+    if (error) {
+      throw new Error(`User not found with email: ${email}`);
+    }
+
+    // Remove the password from the user object
+    delete user.password;
+
+    return user;
+  }
+
+  static async update(id, userData) {
+    const { password, ...rest } = userData;
+
+    let updateData = rest;
+
+    if (password) {
+      // Hash the new password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      updateData.password = hashedPassword;
+    }
+
+    const { data: updatedUser, error } = await supabase
+      .from("users")
+      .update(updateData)
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw new Error(`Error updating user: ${error.message}`);
+    }
+
+    // Remove the password from the user object
+    delete updatedUser.password;
+
+    return updatedUser;
+  }
+
+  static async delete(id) {
+    const { data: deletedUser, error } = await supabase
+      .from("users")
+      .delete()
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw new Error(`Error deleting user: ${error.message}`);
+    }
+
+    // Remove the password from the user object
+    delete deletedUser.password;
+
+    return deletedUser;
+  }
+
+  static async findByRole(role) {
+    const { data: users, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("role", role);
+
+    if (error) {
+      throw new Error(`Error fetching users with role: ${role}`);
+    }
+
+    // Remove the password from each user object
+    const usersWithoutPassword = users.map((user) => {
+      const { password, ...rest } = user;
+      return rest;
+    });
+
+    return usersWithoutPassword;
+  }
+
+  static async updateRole(id, newRole) {
+    const { data: updatedUser, error } = await supabase
+      .from("users")
+      .update({ role: newRole })
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw new Error(`Error updating user role: ${error.message}`);
+    }
+
+    // Remove the password from the user object
+    delete updatedUser.password;
+
+    return updatedUser;
+  }
+}
 
 export default User;

@@ -1,62 +1,75 @@
-import mongoose from "mongoose";
-const { Schema } = mongoose;
+import { createClient } from "@supabase/supabase-js";
 
-const CounsellingRecordSchema = new mongoose.Schema({
-	date: {
-		type: Date,
-		required: true,
-	},
-	details: {
-		type: String,
-		required: true,
-	},
-});
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_PRIVATE_KEY
+);
 
-const TelephonicConversationSchema = new mongoose.Schema({
-	date: {
-		type: Date,
-		required: true,
-	},
-	phoneNo: {
-		type: String,
-		required: true,
-	},
-	callingReason: {
-		type: String,
-		required: true,
-	},
-	remarks: {
-		type: String,
-		required: true,
-	},
-});
+const PTMRecord = {
+  async find() {
+    const { data, error } = await supabase.from("ptm_records").select("*");
 
-const ParentTeacherMeetingSchema = new mongoose.Schema({
-	meetingNo: {
-		type: Number,
-		required: true,
-	},
-	reason: {
-		type: String,
-		required: true,
-	},
-	conclusion: {
-		type: String,
-		required: true,
-	},
-});
+    if (error) {
+      throw new Error(`Error retrieving PTM records: ${error.message}`);
+    }
 
-const PTMRecordSchema = new mongoose.Schema({
-	userId: {
-		type: Schema.Types.ObjectId,
-		ref: "Users",
-		required: true,
-	},
-	counsellingRecords: [CounsellingRecordSchema],
-	telephonicConversations: [TelephonicConversationSchema],
-	parentTeacherMeetings: [ParentTeacherMeetingSchema],
-});
+    return data;
+  },
 
-const PTMRecord = mongoose.model("PTMRecord", PTMRecordSchema);
+  async findById(id) {
+    const { data, error } = await supabase
+      .from("ptm_records")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw new Error(`Error retrieving PTM record: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  async create(ptmData) {
+    const { data, error } = await supabase
+      .from("ptm_records")
+      .insert(ptmData)
+      .single();
+
+    if (error) {
+      throw new Error(`Error creating PTM record: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  async update(id, updateData) {
+    const { data, error } = await supabase
+      .from("ptm_records")
+      .update(updateData)
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw new Error(`Error updating PTM record: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  async delete(id) {
+    const { data, error } = await supabase
+      .from("ptm_records")
+      .delete()
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw new Error(`Error deleting PTM record: ${error.message}`);
+    }
+
+    return data;
+  },
+};
 
 export default PTMRecord;

@@ -1,196 +1,236 @@
-import { promisify } from "util";
-import jwt from "jsonwebtoken";
-import User from "../models/User.js";
+import { createClient } from "@supabase/supabase-js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/appError.js";
-import sendEmail from "../utils/email.js";
-import Role from "../models/Role.js";
+import rateLimit from "express-rate-limit";
+import bcrypt from "bcrypt";
 
-const verfiyAsync = promisify(jwt.verify);
-const signToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_PRIVATE_KEY
+);
 
-const cookieOptions = {
-  expires: new Date(
-    Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-  ),
-  httpOnly: true, //don't let browser js access this cookie, used to prevent xss attacks
-};
-
-if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
-
-export const signup = catchAsync(async (req, res, next) => {
-  const { name, email, phone, avatar, role, password, passwordConfirm } =
-    req.body;
-
-  // Find the role document based on the provided role name
-  const roleDoc = await Role.findOne({ name: role });
-
-  if (!roleDoc) {
-    return next(new AppError("Invalid role", 400));
-  }
-
-  const newUser = await User.create({
-    name,
-    email,
-    phone,
-    avatar,
-    role: roleDoc._id,
-    roleName: roleDoc.name,
-    password,
-    passwordConfirm,
-  });
-
-  const token = signToken(newUser._id);
-
-  res.cookie("jwt", token, cookieOptions);
-
-  // Remove the password from the response
-  newUser.password = undefined;
-
-  res.status(201).json({
-    status: "success",
-    data: {
-      user: newUser,
-    },
-  });
+const signupLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // Limit each IP to 5 signup requests per `window` (here, per hour)
+  message: {
+    status: "fail",
+    message:
+      "Too many signup attempts from this IP, please try again after an hour",
+  },
 });
+
+export const signup = [
+  signupLimiter,
+  catchAsync(async (req, res, next) => {
+    const { name, email, password, passwordConfirm, role } = req.body;
+
+    if (password !== passwordConfirm) {
+      return next(new AppError("Passwords do not match", 400));
+    }
+
+    // Check if the email already exists in the users table
+    const { data: existingUser, error: selectError } = await supabase
+      .from("users")
+      .select("email")
+      .eq("email", email);
+
+    if (selectError) {
+      console.error("Select error:", selectError);
+      return next(new AppError("Failed to check user existence", 500));
+    }
+
+    if (existingUser && existingUser.length > 0) {
+      return next(new AppError("Email already exists", 400));
+    }
+
+    // Create the user in the Supabase authentication system
+    const { data: authData, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (signUpError) {
+      console.error("Sign-up error:", signUpError);
+      return next(new AppError(signUpError.message, 400));
+    }
+
+    if (!authData || !authData.user) {
+      return next(
+        new AppError("Failed to create user. Please try again later.", 500)
+      );
+    }
+
+    const userId = authData.user.id;
+
+    // Hash the password before saving to database
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Insert the user into your database
+    const { data: newUser, error: insertError } = await supabase
+      .from("users")
+      .insert([
+        {
+          id: userId,
+          name,
+          email,
+          role: role || "user", // default to 'user' role if not provided
+          status: "active",
+          phone: req.body.phone || null,
+          avatar: req.body.avatar || null,
+          password: hashedPassword, // save hashed password
+        },
+      ])
+      .single();
+
+    if (insertError) {
+      console.error("Insert error:", insertError);
+      return next(new AppError("Failed to create user in the database", 500));
+    }
+
+    if (!newUser) {
+      return next(new AppError("Failed to create user in the database", 500));
+    }
+
+    const { password: _, ...userWithoutPassword } = newUser;
+
+    res.status(201).json({
+      status: "success",
+      data: {
+        user: userWithoutPassword,
+      },
+    });
+  }),
+];
 
 export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
-  // 1) Check if email and password exist
+  const { data: userData, error: selectError } = await supabase
+    .from("users")
+    .select("*")
+    .eq("email", email)
+    .single();
 
-  if (!email || !password) {
-    return next(new AppError("Please provide email and password", 400));
+  if (selectError) {
+    console.error("Select error:", selectError);
+    return next(new AppError("Failed to retrieve user data", 500));
   }
 
-  // 2) Check if email and password are correct
-
-  const user = await User.findOne({ email }).select("+password");
-
-  if (!user || !(await user.checkPassword(password, user.password))) {
-    // 401 = Unauthorized
-    return next(new AppError("Incorrect email or password", 401));
+  if (!userData) {
+    return next(new AppError("Invalid email or password", 401));
   }
 
-  // 3) Generate JWT and send it back to the client
-  const token = signToken(user._id);
+  if (!userData.password) {
+    return next(new AppError("User data is missing password", 500));
+  }
 
-  //Remove the password from the response
-  user.password = undefined;
+  const isPasswordValid = await bcrypt.compare(password, userData.password);
+
+  if (!isPasswordValid) {
+    return next(new AppError("Invalid email or password", 401));
+  }
+
+  // Remove the password from the response
+  const { password: __, ...userDataWithoutPassword } = userData;
+
   res.status(200).json({
     status: "success",
-    token,
     data: {
-      user,
+      user: userDataWithoutPassword,
     },
   });
 });
 
 export const protect = catchAsync(async (req, res, next) => {
-  // 1) Getting token and check if it;s there
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
-  }
+  const token = req.headers.authorization?.split(" ")[1];
+
   if (!token) {
     return next(
-      new AppError("You are not logged in! Please log in to get access", 401)
+      new AppError("You are not logged in. Please log in to get access.", 401)
     );
   }
 
-  // 2) Verification of token
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  const { user, error } = await supabase.auth.getUser(token);
 
-  // 3) Check if user exists
-  const currentUser = await User.findById(decoded.id).populate("role");
-  if (!currentUser) {
+  if (error) {
     return next(
-      new AppError("The user belonging to the token does not exist", 401)
+      new AppError("Invalid or expired token. Please log in again.", 401)
     );
   }
 
-  // 4) Check if user changed password after the token was issued
+  const { data: userData, error: selectError } = await supabase
+    .from("users")
+    .select("*")
+    .eq("email", user.email)
+    .single();
 
-  if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next(
-      new AppError("User recently changed password! Please log in again", 401)
-    );
+  if (selectError) {
+    console.error("Select error:", selectError);
+    return next(new AppError("Failed to retrieve user data", 500));
   }
 
-  // GRANT ACCESS TO PROTECTED ROUTE
-  req.user = currentUser;
+  if (!userData) {
+    return next(new AppError("User not found", 404));
+  }
+
+  req.user = userData;
   next();
 });
 
-export function restrictTo(...roles) {
+export const restrictTo = (...allowedRoles) => {
   return (req, res, next) => {
-    // roles ['admin', 'lead-guide'] , req.user.role = 'user'  => no access
-
-    //403 = Forbidden
-    if (!roles.includes(req.user.role)) {
+    if (!allowedRoles.includes(req.user.role)) {
       return next(
         new AppError("You do not have permission to perform this action", 403)
       );
     }
-
     next();
   };
-}
+};
 
 export const forgotPassword = catchAsync(async (req, res, next) => {
-  // 1 ) Get user based on POSTed email
+  const { email } = req.body;
 
-  const user = await User.findOne({ email: req.body.email });
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email);
 
-  if (!user) {
-    return next(new AppError("There is no user with that email address.", 404));
+  if (error) {
+    return next(new AppError(error.message, 500));
   }
-  // 2 ) Generate the random reset token
 
-  const resetToken = user.createPasswordResetToken();
-
-  await user.save({ validateBeforeSave: false });
-
-  // 3 ) Send it to user's email
-
-  const resetURL = `${req.protocol}://${req.get(
-    "host"
-  )}/api/v1/users/resetPassword/${resetToken}`;
-
-  const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\n If you didn't forget your password, please ignore this email.`;
-
-  try {
-    await sendEmail({
-      email: user.email,
-      subject: "Your password reset token (valid for 10 minutes)",
-      message,
-    });
-
-    res.status(200).json({
-      status: "success",
-      message: "Token sent to email!",
-    });
-  } catch (err) {
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
-    await user.save({ validateBeforeSave: false });
-
-    return next(
-      new AppError("There was an error sending the email. Try again later!"),
-      500
-    );
-  }
+  res.status(200).json({
+    status: "success",
+    message: "Password reset instructions sent to email",
+  });
 });
-export function resetPassword(req, res, next) {}
 
-export function logout(req, res, next) {
-  req.logout();
-  res.redirect("/");
-}
+export const resetPassword = catchAsync(async (req, res, next) => {
+  const { password } = req.body;
+  const { access_token } = req.query;
+
+  const { error } = await supabase.auth.updateUser(
+    { password },
+    { access_token }
+  );
+
+  if (error) {
+    return next(new AppError(error.message, 400));
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Password reset successful",
+  });
+});
+
+export const logout = catchAsync(async (req, res, next) => {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    return next(new AppError(error.message, 500));
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Logout successful",
+  });
+});

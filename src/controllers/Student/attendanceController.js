@@ -1,7 +1,12 @@
 import axios from "axios";
-import Attendance from "../../models/Student/Attendance.js";
+import { createClient } from "@supabase/supabase-js";
 import ThreadService from "../../services/threadService.js";
 import logger from "../../utils/logger.js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_PRIVATE_KEY
+);
 
 const threadService = new ThreadService();
 
@@ -22,8 +27,8 @@ const sendAttendanceReport = async (attendanceData) => {
     }
   } catch (error) {
     logger.error("Error creating user", {
-      error: err.message,
-      stack: err.stack,
+      error: error.message,
+      stack: error.stack,
     });
     throw new Error(`Error sending attendance report: ${error}`);
   }
@@ -86,11 +91,20 @@ export const submitAttendanceData = async (req, res) => {
     attendanceData.overallAttendance = await checkMinimumAttendance(
       attendanceData
     );
-    const attendance = await Attendance.create(attendanceData);
+
+    const { data, error } = await supabase
+      .from("attendances")
+      .insert(attendanceData)
+      .single();
+
+    if (error) {
+      throw new Error(`Error creating attendance record: ${error.message}`);
+    }
+
     res.status(201).json({
       status: "success",
       data: {
-        attendance,
+        attendance: data,
       },
     });
   } catch (error) {
@@ -99,15 +113,16 @@ export const submitAttendanceData = async (req, res) => {
   }
 };
 
-//This is for testing purposes, we want to quickly delete data
-
+// This is for testing purposes, we want to quickly delete data
 export const deleteAllAttendance = async (req, res) => {
   const userId = req.params.userId;
 
-  // Use Mongoose to delete all attendance records with the specified user ID
-  const result = await Attendance.deleteMany({ userId: userId });
+  const { data, error } = await supabase
+    .from("attendances")
+    .delete()
+    .eq("user_id", userId);
 
-  if (result.deletedCount === 0) {
+  if (error) {
     return res
       .status(400)
       .json({ message: "No attendance records found for user ID" });

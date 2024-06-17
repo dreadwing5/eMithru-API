@@ -1,21 +1,33 @@
-import mongoose from "mongoose";
+import { createClient } from "@supabase/supabase-js";
 
-const { Schema, model } = mongoose;
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_PRIVATE_KEY
+);
 
-const conversationSchema = new Schema({
-  recipients: [{ type: Schema.Types.ObjectId, ref: "Users" }],
-  conversationId: {
-    type: String,
-  },
-  lastMessage: {
-    type: String,
-  },
-  date: {
-    type: String,
-    default: Date.now,
-  },
-});
+const getConversations = async () => {
+  const { data, error } = await supabase
+    .from("private_conversations")
+    .select("*");
 
-const Conversation = model("conversations", conversationSchema);
+  if (error) {
+    throw new Error(`Error retrieving conversations: ${error.message}`);
+  }
 
-export default Conversation;
+  return data;
+};
+
+const createConversation = async (conversationData) => {
+  const { data, error } = await supabase
+    .from("private_conversations")
+    .insert(conversationData)
+    .single();
+
+  if (error) {
+    throw new Error(`Error creating conversation: ${error.message}`);
+  }
+
+  return data;
+};
+
+export { getConversations, createConversation };

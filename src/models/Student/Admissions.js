@@ -1,24 +1,75 @@
-// const mongoose = require("mongoose");
-import mongoose from "mongoose";
-// Define schema for admission details
-const AdmissionSchema = new mongoose.Schema({
-	admissionYear: { type: Number, required: true },
-	branch: { type: String, required: true },
-	semester: { type: String, required: true },
-	admissionType: { type: String, required: true },
-	category: { type: String, required: true },
-	usn: { type: String, required: true },
-	collegeID: { type: Number, required: true },
-	documentsSubmitted: [{ type: String }],
-	changeOfBranch: {
-		year: { type: Number },
-		newBranch: { type: String },
-		usn: { type: String },
-		collegeID: { type: Number },
-	},
-});
+import { createClient } from "@supabase/supabase-js";
 
-// Create admission model
-const Admission = mongoose.model("Admission", AdmissionSchema);
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_PRIVATE_KEY
+);
+
+const Admission = {
+  async find() {
+    const { data, error } = await supabase.from("admissions").select("*");
+
+    if (error) {
+      throw new Error(`Error retrieving admissions: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  async findById(id) {
+    const { data, error } = await supabase
+      .from("admissions")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw new Error(`Error retrieving admission: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  async create(admissionData) {
+    const { data, error } = await supabase
+      .from("admissions")
+      .insert(admissionData)
+      .single();
+
+    if (error) {
+      throw new Error(`Error creating admission: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  async update(id, updateData) {
+    const { data, error } = await supabase
+      .from("admissions")
+      .update(updateData)
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw new Error(`Error updating admission: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  async delete(id) {
+    const { data, error } = await supabase
+      .from("admissions")
+      .delete()
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw new Error(`Error deleting admission: ${error.message}`);
+    }
+
+    return data;
+  },
+};
 
 export default Admission;
