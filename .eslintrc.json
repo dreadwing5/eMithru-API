@@ -1,11 +1,26 @@
 {
-  "extends": ["airbnb", "prettier", "plugin:node/recommended"],
-  "plugins": ["prettier", "import"],
+  "extends": [
+    "airbnb",
+    "prettier",
+    "plugin:node/recommended"
+  ],
+  "plugins": [
+    "prettier",
+    "import"
+  ],
   "rules": {
     "import/no-unresolved": 2,
     "import/no-commonjs": 2,
-    "import/extensions": [2, "ignorePackages"],
-    "prettier/prettier": "error",
+    "import/extensions": [
+      2,
+      "ignorePackages"
+    ],
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
     "spaced-comment": "off",
     "no-console": "warn",
     "consistent-return": "off",
@@ -20,7 +35,11 @@
       "error",
       "always",
       {
-        "tryExtensions": [".js", ".json", ".node"],
+        "tryExtensions": [
+          ".js",
+          ".json",
+          ".node"
+        ],
         ".xxx": "always"
       }
     ],

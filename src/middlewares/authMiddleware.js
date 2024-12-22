@@ -1,8 +1,9 @@
 // middlewares/authMiddleware.js
 import AppError from "../utils/appError.js";
 
-const authorizePermissions = (...requiredPermissions) => {
-  return (req, res, next) => {
+const authorizePermissions =
+  (...requiredPermissions) =>
+  (req, res, next) => {
     if (!req.user || !req.user.role) {
       return next(
         new AppError("Unauthorized access. User or role not found.", 403)
@@ -23,6 +24,5 @@ const authorizePermissions = (...requiredPermissions) => {
 
     next();
   };
-};
 
 export { authorizePermissions };
